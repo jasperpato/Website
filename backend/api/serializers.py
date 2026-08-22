@@ -5,7 +5,7 @@ from .models import Category, Word
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "name", "color_hex"]
+        fields = ["id", "name", "color"]
 
 
 class WordSerializer(serializers.ModelSerializer):
