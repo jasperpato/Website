@@ -1,90 +1,89 @@
-import random
-import resend
 from django.conf import settings
-from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Category, EmailVerification, Word
+from .models import Category, Word
 from .serializers import CategorySerializer, WordSerializer
 
-resend.api_key = settings.RESEND_API_KEY
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 
-def _issue_tokens(user):
-    refresh = RefreshToken.for_user(user)
-    return {"access": str(refresh.access_token), "refresh": str(refresh)}
-
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def register(request):
-    username = request.data.get("username", "").strip()
-    password = request.data.get("password", "").strip()
-    if not username or not password:
-        return Response({"error": "username and password are required"}, status=status.HTTP_400_BAD_REQUEST)
-    if User.objects.filter(username=username).exists():
-        return Response({"error": "username already taken"}, status=status.HTTP_400_BAD_REQUEST)
-
-    user = User.objects.create_user(username=username, password=password, is_active=False)
-    code = f"{random.randint(0, 999999):06d}"
-    EmailVerification.objects.update_or_create(user=user, defaults={"code": code})
-
-    resend.Emails.send({
-        "from": settings.RESEND_FROM,
-        "to": username,
-        "subject": "Your verification code",
-        "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
-    })
-
-    return Response({"message": "verification code sent"}, status=status.HTTP_201_CREATED)
-
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def verify(request):
-    username = request.data.get("username", "").strip()
-    code = request.data.get("code", "").strip()
-    try:
-        user = User.objects.get(username=username)
-        verification = user.email_verification
-    except (User.DoesNotExist, EmailVerification.DoesNotExist):
-        return Response({"error": "invalid code"}, status=status.HTTP_400_BAD_REQUEST)
-
-    if verification.is_expired():
-        return Response({"error": "code expired"}, status=status.HTTP_400_BAD_REQUEST)
-    if verification.code != code:
-        return Response({"error": "invalid code"}, status=status.HTTP_400_BAD_REQUEST)
-
-    user.is_active = True
-    user.save()
-    verification.delete()
-
-    return Response(_issue_tokens(user))
+class IsStaff(BasePermission):
+    def has_permission(self, request: Request, view):
+        return bool(request.user and request.user.is_authenticated and request.user.is_staff)
 
 
 @api_view(["GET"])
-def categories(request):
+def categories(request: Request) -> Response:
     serializer = CategorySerializer(Category.objects.all(), many=True)
     return Response(serializer.data)
 
 
 @api_view(["GET", "POST"])
-def words(request):
+@permission_classes([AllowAny])
+def words(request: Request) -> Response:
+    if request.method == "POST" and not request.user.is_authenticated:
+        return Response({"error": "authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
     if request.method == "GET":
-        serializer = WordSerializer(Word.objects.all(), many=True)
+        limit = int(request.query_params.get("limit", 100))
+        sorted_by = request.query_params.get("sorted_by", "alphabetical")
+        ascending = request.query_params.get("ascending", "true").lower() != "false"
+        approved_only = request.query_params.get("approved_only", "false").lower() == "true"
+
+        qs = Word.objects.all()
+
+        if approved_only:
+            qs = qs.filter(approved=True)
+
+        sort_map = {
+            "alphabetical": "word",
+            "submitted_at": "submitted_at",
+            "approved_at": "approved_at",
+            "category": "category__name",
+        }
+
+        if sorted_by == "random":
+            qs = qs.order_by("?")
+        else:
+            field = sort_map.get(sorted_by, "word")
+            qs = qs.order_by(field if ascending else f"-{field}")
+
+        serializer = WordSerializer(qs[:limit], many=True)
         return Response(serializer.data)
 
     serializer = WordSerializer(data=request.data)
+
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     word = serializer.validated_data["word"]
+    
     if not word.strip():
         return Response({"error": "word is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     serializer.save(creator=request.user)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(["PATCH"])
+@permission_classes([IsStaff])
+def update_word(request, word_id):
+    try:
+        word = Word.objects.get(id=word_id)
+    except Word.DoesNotExist:
+        return Response({"error": "word not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if "approved" in request.data:
+        word.approved = request.data["approved"]
+        word.approved_at = timezone.now() if request.data["approved"] is True else None
+
+    serializer = WordSerializer(word, data=request.data, partial=True)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.save()
+    return Response(serializer.data)

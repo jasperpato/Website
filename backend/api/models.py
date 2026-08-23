@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 
 
 class Category(models.Model):
@@ -13,21 +13,12 @@ class Category(models.Model):
 
 class Word(models.Model):
     word = models.CharField(max_length=255)
-    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="words")
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="words")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="words")
-    approved = models.BooleanField(default=False)
+    approved = models.BooleanField(null=True, default=None)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(null=True, blank=True, default=None)
 
     class Meta:
         db_table = "words"
 
-
-class EmailVerification(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="email_verification")
-    code = models.CharField(max_length=6)
-    created_at = models.DateTimeField(default=timezone.now)
-
-    class Meta:
-        db_table = "email_verifications"
-
-    def is_expired(self):
-        return timezone.now() > self.created_at + timezone.timedelta(minutes=10)
