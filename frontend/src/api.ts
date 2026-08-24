@@ -102,7 +102,7 @@ export async function register(email: string): Promise<unknown> {
     return data
 }
 
-export async function verifyCode(email: string, code: string): Promise<unknown> {
+export async function submitCode(email: string, code: string): Promise<unknown> {
     const res = await fetch(`${BASE}/auth/submit_code/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

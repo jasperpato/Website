@@ -15,9 +15,10 @@ interface ModalProps {
   leftButton?: ModalButton | null;
   rightButton?: ModalButton | null;
   children?: ReactNode;
+  errorMessage?: string;
 }
 
-export default function Modal({ title, onClose, onBack, leftButton, rightButton, children }: ModalProps) {
+export default function Modal({ title, onClose, onBack, leftButton, rightButton, children, errorMessage }: ModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose || undefined}>
       <div className="bg-white rounded-lg w-full max-w-md mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
@@ -38,6 +39,10 @@ export default function Modal({ title, onClose, onBack, leftButton, rightButton,
         <div className="p-4 flex-1">
           {children}
         </div>
+
+        {errorMessage && <div className="p-4 flex-1 text-error">
+          {errorMessage}
+        </div>}
 
         <div className="flex justify-center items-center gap-3 p-4 border-t border-border">
           {leftButton && <Button label={leftButton.label} onClick={leftButton.onClick} enabled={leftButton.enabled} />}
