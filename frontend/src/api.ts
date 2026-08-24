@@ -21,10 +21,12 @@ export interface Word {
 }
 
 export class ApiError extends Error {
-    status: number
+    status?: number
+    message: string
 
-    constructor(message: string, status: number) {
+    constructor(message: string, status?: number) {
         super(message)
+        this.message = message
         this.status = status
     }
 }
@@ -50,14 +52,14 @@ function storeTokens(access: string, refresh: string) {
 
 export async function refreshAccessToken(): Promise<string> {
     const refresh = localStorage.getItem('refresh')
-    if (!refresh) throw new Error('No refresh token')
+    if (!refresh) throw new ApiError('No refresh token')
     const res = await fetch(`${BASE}/auth/refresh/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error('Session expired')
+    if (!res.ok) throw new ApiError('Session expired')
     localStorage.setItem('access', data.access)
     return data.access
 }
@@ -84,7 +86,7 @@ export async function getMe(): Promise<User> {
         headers: { 'Authorization': `Bearer ${token}` },
     })
     const data = await res.json()
-    if (!res.ok) throw new Error('Failed to fetch user')
+    if (!res.ok) throw new ApiError('Failed to fetch user')
     localStorage.setItem('is_staff', data.is_staff)
     return data
 }
@@ -97,7 +99,7 @@ export async function register(email: string): Promise<unknown> {
     })
     const data = await res.json()
     if (!res.ok) {
-        throw new ApiError(data.error || 'Registration failed', res.status)
+        throw new ApiError(data.error || data.message || 'Registration failed', res.status)
     }
     return data
 }
@@ -109,7 +111,7 @@ export async function submitCode(email: string, code: string): Promise<unknown> 
         body: JSON.stringify({ email, code }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Verification failed')
+    if (!res.ok) throw new ApiError(data.error || 'Verification failed')
     storeTokens(data.access, data.refresh)
     localStorage.setItem('email', email)
     return data
@@ -122,7 +124,7 @@ export async function login(email: string, password: string): Promise<unknown> {
         body: JSON.stringify({ email, password }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.detail || 'Login failed')
+    if (!res.ok) throw new ApiError(data.detail || 'Login failed')
     storeTokens(data.access, data.refresh)
     localStorage.setItem('email', email)
     return data
@@ -139,7 +141,7 @@ export async function logout(): Promise<void> {
                 body: JSON.stringify({ refresh }),
             })
         } catch {
-            // ignore network errors, still clear local session below
+            // ignore network ApiErrors, still clear local session below
         }
     }
 
@@ -151,7 +153,7 @@ export async function logout(): Promise<void> {
 export async function getWords(): Promise<Word[]> {
     const res = await fetch(`${BASE}/api/words/`)
     const data = await res.json()
-    if (!res.ok) throw new Error('Failed to fetch words')
+    if (!res.ok) throw new ApiError('Failed to fetch words')
     return data
 }
 
@@ -161,7 +163,7 @@ export async function getCategories(): Promise<WordCategory[]> {
         headers: { 'Authorization': `Bearer ${token}` },
     })
     const data = await res.json()
-    if (!res.ok) throw new Error('Failed to fetch categories')
+    if (!res.ok) throw new ApiError('Failed to fetch categories')
     return data
 }
 
@@ -176,7 +178,7 @@ export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'
         body: JSON.stringify(data),
     })
     const result = await res.json()
-    if (!res.ok) throw new Error(result.error || 'Failed to update word')
+    if (!res.ok) throw new ApiError(result.error || 'Failed to update word')
     return result
 }
 
@@ -191,6 +193,6 @@ export async function addWord(word: string, categoryId: number | null = null): P
         body: JSON.stringify({ word, category_id: categoryId }),
     })
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error || 'Failed to add word')
+    if (!res.ok) throw new ApiError(data.error || 'Failed to add word')
     return data
 }

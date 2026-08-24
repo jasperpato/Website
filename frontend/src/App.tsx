@@ -36,6 +36,11 @@ function App() {
 
     const [errorText, setErrorText] = useState<string | null>(null)
 
+    const closeModal = () => {
+        setModalOpen(false)
+        resetModal()
+    }
+
     // ----- backend objects -----
 
     const [user, setUser] = useState<User | null>(null)
@@ -81,22 +86,27 @@ function App() {
     }, [loggedIn, fetchObjects])
 
 
+    const resetModal = (keepEmail: boolean = false) => {
+        if (!keepEmail) setEmailText('')
+        setPasswordText('')
+        setConfirmPasswordText('')
+        setCodeText('')
+        setErrorText('')
+    } 
+
     const onLogout = () => {
         logout()
         setUser(null)
         setWords([])
         setCategories([])
-        setEmailText('')
-        setPasswordText('')
-        setConfirmPasswordText('')
-        setCodeText('')
-        setModalOpen(false)
+        closeModal()
     }
 
     const onSubmitEmail = async () => {
         try {
             await register(emailText)
             setModalState(ModalState.SUBMIT_CODE)
+            resetModal(true)
         } catch (err) {
             if (err instanceof ApiError && err.status === 409) setModalState(ModalState.LOGIN) // user exists
             else if (err instanceof Error) setErrorText(err.message)
@@ -107,7 +117,7 @@ function App() {
         try {
             await login(emailText, passwordText)
             fetchObjects()
-            setModalOpen(false)
+            closeModal()
         } catch (err) {
             if (err instanceof ApiError) setErrorText(err.message)
         }
@@ -117,13 +127,13 @@ function App() {
         try {
             await submitCode(emailText, codeText)
             fetchObjects()
-            setModalOpen(false)
+            closeModal()
         } catch (err) {
             if (err instanceof ApiError) setErrorText(err.message)
         }
     }
 
-    const inputClass = ""
+    const inputClass = "border border-border rounded px-3 py-2 text-sm w-full outline-none focus:border-secondary"
 
     return (<>
         <Header
@@ -155,7 +165,7 @@ function App() {
                 <Modal
                     title = "Account"
                     rightButton = {{ label: "Log out", onClick: onLogout, enabled: true }}
-                    onClose = {() => setModalOpen(false)}
+                    onClose = {closeModal}
                     errorMessage={errorText || undefined}
                 >
                     <p className="text-sm text-muted">{user?.email}</p>
@@ -166,7 +176,7 @@ function App() {
                 <Modal
                     title = "Account"
                     rightButton = {{ label: "Submit", onClick: onSubmitEmail, enabled: emailValid(emailText) }}
-                    onClose = {() => setModalOpen(false)}
+                    onClose = {closeModal}
                     errorMessage={errorText || undefined}
                 >
                     <input type="email" placeholder="Email" value={emailText} onChange={e => setEmailText(e.target.value)} className={inputClass} />
@@ -180,7 +190,8 @@ function App() {
                 <Modal
                     title = "Login"
                     rightButton = {{ label: "Log in", onClick: onLogin, enabled: true }}
-                    onClose = {() => setModalOpen(false)}
+                    onClose = {closeModal}
+                    onBack={() => setModalState(ModalState.SUBMIT_EMAIL)}
                     errorMessage={errorText || undefined}
                 >
                     <input type="email" placeholder="Email or Username" value={emailText} className={inputClass} disabled/>
@@ -192,9 +203,11 @@ function App() {
                     title = "Verify Email"
                     rightButton = {{ label: "Submit", onClick: onSubmitCode, enabled: true }}
                     onClose = {() => setModalOpen(false)}
+                    onBack={() => setModalState(ModalState.SUBMIT_EMAIL)}
                     errorMessage={errorText || undefined}
                 >
-                    <input placeholder="Verification Code" value={codeText} className={inputClass}/>
+                    <p>We sent an email to <strong>{emailText}</strong> with a verification code!</p>
+                    <input placeholder="Verification Code" value={codeText} onChange={e => setCodeText(e.target.value)} className={inputClass}/>
                 </Modal>
             ) : ( // (modalState == ModalState.UPDATE_ACCOUNT)
                 <Modal>

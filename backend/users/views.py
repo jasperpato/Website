@@ -1,5 +1,6 @@
 import random
 import resend
+from resend.exceptions import ValidationError
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, throttle_scope
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -89,20 +90,28 @@ def register_email(request: Request) -> Response:
     if not email:
         return Response({"error": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if get_user_model().objects.filter(email=email).exists():
-        return Response({"error": "User with that email exists"}, status=status.HTTP_409_CONFLICT)
+    try:
+        user = get_user_model().objects.get(email=email)
 
-    user = get_user_model().objects.create_user(email=email, is_active=False)
+        if user.is_active:
+            return Response({"error": "User with that email exists"}, status=status.HTTP_409_CONFLICT)
+
+    except get_user_model().DoesNotExist:
+        user = get_user_model().objects.create_user(email=email, is_active=False)
+
     code = f"{random.randint(0, 999999):06d}"
 
     EmailVerification.objects.update_or_create(user=user, defaults={"code": code})
 
-    resend.Emails.send({
-        "from": settings.RESEND_FROM,
-        "to": email,
-        "subject": "Your verification code",
-        "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
-    })
+    try:
+        resend.Emails.send({
+            "from": settings.RESEND_FROM,
+            "to": email,
+            "subject": "Your verification code",
+            "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
+        })
+    except ValidationError:
+        Response({"error": "email is invalid"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"message": "verification code sent"}, status=status.HTTP_201_CREATED)
 
