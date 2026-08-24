@@ -6,6 +6,10 @@
   --color-border: #e5e7eb;
   --color-muted: #6b7280;
   --color-accent: #aa3bff;
+
+  --color-success: #22c55e;
+  --color-error: coral;
+  --color-warning: #f59e0b;
 }
 
 :root {

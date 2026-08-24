@@ -8,7 +8,10 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       <div className="relative">
         <ListboxButton className={`w-full flex justify-between items-center border border-border rounded px-3 py-2 text-sm outline-none focus:border-secondary bg-white ${disabled ? 'opacity-40 cursor-default' : 'cursor-pointer'}`}>
-          <span className={selected ? 'text-black' : 'text-muted'}>{selected ? selected.label : placeholder}</span>
+          <span className={`flex items-center gap-2 ${selected ? 'text-black' : 'text-muted'}`}>
+            {selected?.color && <span className="inline-block w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: selected.color }} />}
+            {selected ? selected.label : placeholder}
+          </span>
           <ChevronDown size={16} className="text-muted" />
         </ListboxButton>
         <ListboxOptions className="absolute z-10 mt-1 w-full bg-white border border-border rounded shadow-sm">
@@ -20,7 +23,10 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
             >
               {({ selected }) => (
                 <>
-                  <span>{o.label}</span>
+                  <span className="flex items-center gap-2">
+                    {o.color && <span className="inline-block w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: o.color }} />}
+                    {o.label}
+                  </span>
                   {selected && <Check size={14} className="text-primary" />}
                 </>
               )}

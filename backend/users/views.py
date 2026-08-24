@@ -90,7 +90,7 @@ def register_email(request: Request) -> Response:
         return Response({"error": "email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     if get_user_model().objects.filter(email=email).exists():
-        return Response({"error": "User with that email exists"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "User with that email exists"}, status=status.HTTP_409_CONFLICT)
 
     user = get_user_model().objects.create_user(email=email, is_active=False)
     code = f"{random.randint(0, 999999):06d}"
