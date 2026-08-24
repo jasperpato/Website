@@ -1,7 +1,23 @@
+import { ReactNode } from 'react';
 import { ArrowLeft, X } from 'lucide-react';
 import Button from './Button';
 
-export default function Modal({ title, onClose, onBack, leftAction, rightAction, leftEnabled = true, rightEnabled = true, children }) {
+interface ModalButton {
+  label: string;
+  onClick: () => void;
+  enabled: boolean;
+}
+
+interface ModalProps {
+  title?: string;
+  onClose?: () => void;
+  onBack?: () => void;
+  leftButton?: ModalButton | null;
+  rightButton?: ModalButton | null;
+  children?: ReactNode;
+}
+
+export default function Modal({ title, onClose, onBack, leftButton, rightButton, children }: ModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose || undefined}>
       <div className="bg-white rounded-lg w-full max-w-md mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
@@ -24,8 +40,8 @@ export default function Modal({ title, onClose, onBack, leftAction, rightAction,
         </div>
 
         <div className="flex justify-center items-center gap-3 p-4 border-t border-border">
-          {leftAction && <Button label={leftAction.label} onClick={leftAction.onClick} enabled={leftEnabled} />}
-          <Button label={rightAction?.label} onClick={rightAction?.onClick} primary enabled={rightEnabled} />
+          {leftButton && <Button label={leftButton.label} onClick={leftButton.onClick} enabled={leftButton.enabled} />}
+          {rightButton && <Button label={rightButton.label} onClick={rightButton.onClick} primary enabled={rightButton.enabled} />}
         </div>
       </div>
     </div>

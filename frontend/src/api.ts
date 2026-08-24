@@ -1,6 +1,35 @@
 const BASE = import.meta.env.VITE_API_URL
 
-function decodeJwt(token) {
+export interface User {
+    email: string
+    username: string
+    is_staff: boolean
+}
+
+export interface WordCategory {
+    id: number
+    name: string
+    color: string
+}
+
+export interface Word {
+    id: number
+    word: string
+    category: WordCategory | null
+    submitted_at: string
+    approved: boolean | null
+}
+
+export class ApiError extends Error {
+    status: number
+
+    constructor(message: string, status: number) {
+        super(message)
+        this.status = status
+    }
+}
+
+function decodeJwt(token: string): { exp?: number } | null {
     try {
         return JSON.parse(atob(token.split('.')[1]))
     } catch {
@@ -8,18 +37,18 @@ function decodeJwt(token) {
     }
 }
 
-function isTokenExpired(token) {
+function isTokenExpired(token: string): boolean {
     const payload = decodeJwt(token)
     if (!payload?.exp) return true
     return Date.now() / 1000 > payload.exp - 30 // 30s buffer
 }
 
-function storeTokens(access, refresh) {
+function storeTokens(access: string, refresh: string) {
     localStorage.setItem('access', access)
     localStorage.setItem('refresh', refresh)
 }
 
-export async function refreshAccessToken() {
+export async function refreshAccessToken(): Promise<string> {
     const refresh = localStorage.getItem('refresh')
     if (!refresh) throw new Error('No refresh token')
     const res = await fetch(`${BASE}/auth/refresh/`, {
@@ -33,7 +62,7 @@ export async function refreshAccessToken() {
     return data.access
 }
 
-export async function getValidToken() {
+export async function getValidToken(): Promise<string> {
     let token = localStorage.getItem('access')
     if (!token || isTokenExpired(token)) {
         token = await refreshAccessToken()
@@ -41,15 +70,15 @@ export async function getValidToken() {
     return token
 }
 
-export function getStoredEmail() {
+export function getStoredEmail(): string | null {
     return localStorage.getItem('email')
 }
 
-export function getStoredIsStaff() {
+export function getStoredIsStaff(): boolean {
     return localStorage.getItem('is_staff') === 'true'
 }
 
-export async function getMe() {
+export async function getMe(): Promise<User> {
     const token = await getValidToken()
     const res = await fetch(`${BASE}/auth/me/`, {
         headers: { 'Authorization': `Bearer ${token}` },
@@ -60,7 +89,7 @@ export async function getMe() {
     return data
 }
 
-export async function register(email) {
+export async function register(email: string): Promise<unknown> {
     const res = await fetch(`${BASE}/auth/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -68,14 +97,12 @@ export async function register(email) {
     })
     const data = await res.json()
     if (!res.ok) {
-        const error = new Error(data.error || 'Registration failed')
-        error.status = res.status
-        throw error
+        throw new ApiError(data.error || 'Registration failed', res.status)
     }
     return data
 }
 
-export async function verifyCode(email, code) {
+export async function verifyCode(email: string, code: string): Promise<unknown> {
     const res = await fetch(`${BASE}/auth/submit_code/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -88,7 +115,7 @@ export async function verifyCode(email, code) {
     return data
 }
 
-export async function login(email, password) {
+export async function login(email: string, password: string): Promise<unknown> {
     const res = await fetch(`${BASE}/auth/login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,7 +128,7 @@ export async function login(email, password) {
     return data
 }
 
-export async function logout() {
+export async function logout(): Promise<void> {
     const refresh = localStorage.getItem('refresh')
 
     if (refresh) {
@@ -121,17 +148,16 @@ export async function logout() {
     localStorage.removeItem('email')
 }
 
-export async function getWords({ limit = 100, sorted_by = 'alphabetical', ascending = true, approved_only = false } = {}) {
-    const params = new URLSearchParams({ limit, sorted_by, ascending, approved_only })
-    const res = await fetch(`${BASE}/words/?${params}`)
+export async function getWords(): Promise<Word[]> {
+    const res = await fetch(`${BASE}/api/words/`)
     const data = await res.json()
     if (!res.ok) throw new Error('Failed to fetch words')
     return data
 }
 
-export async function getCategories() {
+export async function getCategories(): Promise<WordCategory[]> {
     const token = await getValidToken()
-    const res = await fetch(`${BASE}/categories/`, {
+    const res = await fetch(`${BASE}/api/categories/`, {
         headers: { 'Authorization': `Bearer ${token}` },
     })
     const data = await res.json()
@@ -139,9 +165,9 @@ export async function getCategories() {
     return data
 }
 
-export async function updateWord(id, data) {
+export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'>>): Promise<Word> {
     const token = await getValidToken()
-    const res = await fetch(`${BASE}/words/${id}/`, {
+    const res = await fetch(`${BASE}/api/words/${id}/`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
@@ -154,7 +180,7 @@ export async function updateWord(id, data) {
     return result
 }
 
-export async function addWord(word, categoryId = null) {
+export async function addWord(word: string, categoryId: number | null = null): Promise<Word> {
     const token = await getValidToken()
     const res = await fetch(`${BASE}/words/`, {
         method: 'POST',
