@@ -36,7 +36,7 @@ export default function Modal({ title, onClose, onBack, leftButton, rightButton,
           )}
         </div>
 
-        <div className="p-4 flex-1">
+        <div className="p-4 flex-1 flex flex-col gap-3">
           {children}
         </div>
 

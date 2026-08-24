@@ -7,6 +7,7 @@ from .views import (
     request_login_code,
     EmailOrUsernameTokenObtainPairView,
     EmailCodeTokenObtainPairView,
+    update_user
 )
 
 
@@ -18,4 +19,5 @@ urlpatterns = [
     path("refresh/", TokenRefreshView.as_view()),
     path("me/", me),
     path("logout/", logout),
+    path("update/", update_user),
 ]

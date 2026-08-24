@@ -53,22 +53,28 @@ function storeTokens(access: string, refresh: string) {
 export async function refreshAccessToken(): Promise<string> {
     const refresh = localStorage.getItem('refresh')
     if (!refresh) throw new ApiError('No refresh token')
+    
     const res = await fetch(`${BASE}/auth/refresh/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh }),
     })
+
     const data = await res.json()
     if (!res.ok) throw new ApiError('Session expired')
+    
     localStorage.setItem('access', data.access)
+
     return data.access
 }
 
 export async function getValidToken(): Promise<string> {
     let token = localStorage.getItem('access')
+    
     if (!token || isTokenExpired(token)) {
         token = await refreshAccessToken()
     }
+
     return token
 }
 
@@ -82,13 +88,44 @@ export function getStoredIsStaff(): boolean {
 
 export async function getMe(): Promise<User> {
     const token = await getValidToken()
+    
     const res = await fetch(`${BASE}/auth/me/`, {
         headers: { 'Authorization': `Bearer ${token}` },
     })
+
     const data = await res.json()
     if (!res.ok) throw new ApiError('Failed to fetch user')
+    
     localStorage.setItem('is_staff', data.is_staff)
+    
     return data
+}
+
+export async function updateUser(username: string, password: string): Promise<User> {
+    const token = await getValidToken()
+    
+    const res = await fetch(`${BASE}/auth/update/`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+         },
+        body: JSON.stringify({ username, password }),
+    })
+
+    const data = await res.json()
+    check_error(res, data)
+    
+    localStorage.setItem('is_staff', data.is_staff)
+    
+    return data
+}
+
+function check_error(res: Response, data?: any, errorMessage?: string) {
+    if (!res.ok) {
+        if (res.status === 429) throw new ApiError('Too many requests, come back later', 429)
+        throw new ApiError(errorMessage || data.error || data.message || "Error occurred", res.status)
+    }
 }
 
 export async function register(email: string): Promise<unknown> {
@@ -97,10 +134,10 @@ export async function register(email: string): Promise<unknown> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
     })
+
     const data = await res.json()
-    if (!res.ok) {
-        throw new ApiError(data.error || data.message || 'Registration failed', res.status)
-    }
+    check_error(res, data)
+    
     return data
 }
 
@@ -110,10 +147,13 @@ export async function submitCode(email: string, code: string): Promise<unknown> 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code }),
     })
+
     const data = await res.json()
-    if (!res.ok) throw new ApiError(data.error || 'Verification failed')
+    check_error(res, data)
+
     storeTokens(data.access, data.refresh)
     localStorage.setItem('email', email)
+
     return data
 }
 
@@ -123,10 +163,26 @@ export async function login(email: string, password: string): Promise<unknown> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
     })
+
     const data = await res.json()
-    if (!res.ok) throw new ApiError(data.detail || 'Login failed')
+    check_error(res, data)
+
     storeTokens(data.access, data.refresh)
     localStorage.setItem('email', email)
+    
+    return data
+}
+
+export async function loginWithCode(email: string): Promise<unknown> {
+    const res = await fetch(`${BASE}/auth/login_with_code/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+    })
+
+    const data = await res.json()
+    check_error(res, data)
+    
     return data
 }
 
@@ -159,16 +215,20 @@ export async function getWords(): Promise<Word[]> {
 
 export async function getCategories(): Promise<WordCategory[]> {
     const token = await getValidToken()
+
     const res = await fetch(`${BASE}/api/categories/`, {
         headers: { 'Authorization': `Bearer ${token}` },
     })
+
     const data = await res.json()
     if (!res.ok) throw new ApiError('Failed to fetch categories')
+
     return data
 }
 
 export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'>>): Promise<Word> {
     const token = await getValidToken()
+
     const res = await fetch(`${BASE}/api/words/${id}/`, {
         method: 'PATCH',
         headers: {
@@ -177,13 +237,16 @@ export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'
         },
         body: JSON.stringify(data),
     })
+
     const result = await res.json()
-    if (!res.ok) throw new ApiError(result.error || 'Failed to update word')
+    check_error(res, result)
+
     return result
 }
 
 export async function addWord(word: string, categoryId: number | null = null): Promise<Word> {
     const token = await getValidToken()
+
     const res = await fetch(`${BASE}/words/`, {
         method: 'POST',
         headers: {
@@ -193,6 +256,7 @@ export async function addWord(word: string, categoryId: number | null = null): P
         body: JSON.stringify({ word, category_id: categoryId }),
     })
     const data = await res.json()
-    if (!res.ok) throw new ApiError(data.error || 'Failed to add word')
+    check_error(res, data)
+
     return data
 }

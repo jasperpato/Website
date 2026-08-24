@@ -4,7 +4,8 @@ import Modal from './components/Modal'
 import Panel from './components/Panel'
 import AddWords from './components/AddWords'
 import WordsTable from './components/WordsTable'
-import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, WordCategory } from './api'
+import LinkText from './components/LinkText'
+import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, WordCategory, updateUser, loginWithCode } from './api'
 
 
 const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -12,11 +13,13 @@ const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const ModalState = Object.freeze({
     VIEW_ACCOUNT: 'view_account',
     SUBMIT_EMAIL: 'submit_email',
-    REGISTER: 'register',
     LOGIN: 'login',
     SUBMIT_CODE: 'submit_code',
     UPDATE_ACCOUNT: 'update_account',
 })
+
+const VERIFICATION_CODE_LENGTH = 6
+const MIN_PASSWORD_LENGTH = 8
 
 type ModalState = typeof ModalState[keyof typeof ModalState]
 
@@ -26,10 +29,31 @@ function App() {
 
     const [modalOpen, setModalOpen] = useState(false)
     const [modalState, setModalState] = useState<ModalState>(ModalState.SUBMIT_EMAIL)
+    const [modalHistory, setModalHistory] = useState<ModalState[]>([])
+
+    const goToModal = (next: ModalState) => {
+        setErrorText("")
+
+        if (next == ModalState.UPDATE_ACCOUNT) {
+            setUsernameText(user?.username || "")
+        }
+
+        setModalHistory(prev => [...prev, modalState])
+        setModalState(next)
+    }
+
+    const goBack = () => {
+        setModalHistory(prev => {
+            if (prev.length === 0) return prev
+            setModalState(prev[prev.length - 1])
+            return prev.slice(0, -1)
+        })
+    }
 
     // ----- modal fields -----
 
     const [emailText, setEmailText] = useState('')
+    const [usernameText, setUsernameText] = useState('')
     const [passwordText, setPasswordText] = useState('')
     const [confirmPasswordText, setConfirmPasswordText] = useState('')
     const [codeText, setCodeText] = useState('')
@@ -38,8 +62,11 @@ function App() {
 
     const closeModal = () => {
         setModalOpen(false)
+        setModalHistory([])
         resetModal()
     }
+
+    const updateUserEnabled = usernameText != "" && ((passwordText == "" && confirmPasswordText == "") || (passwordText.length > MIN_PASSWORD_LENGTH && passwordText == confirmPasswordText))
 
     // ----- backend objects -----
 
@@ -105,10 +132,10 @@ function App() {
     const onSubmitEmail = async () => {
         try {
             await register(emailText)
-            setModalState(ModalState.SUBMIT_CODE)
+            goToModal(ModalState.SUBMIT_CODE)
             resetModal(true)
         } catch (err) {
-            if (err instanceof ApiError && err.status === 409) setModalState(ModalState.LOGIN) // user exists
+            if (err instanceof ApiError && err.status === 409) goToModal(ModalState.LOGIN) // user exists
             else if (err instanceof Error) setErrorText(err.message)
         }
     }
@@ -127,9 +154,30 @@ function App() {
         try {
             await submitCode(emailText, codeText)
             fetchObjects()
-            closeModal()
+            // closeModal()
+            goToModal(ModalState.UPDATE_ACCOUNT)
         } catch (err) {
             if (err instanceof ApiError) setErrorText(err.message)
+        }
+    }
+
+    const onUpdateAccount = async () => {
+        try {
+            await updateUser(usernameText, passwordText)
+            setErrorText("")
+            setPasswordText("")
+            setConfirmPasswordText("")
+        } catch (err) {
+            if (err instanceof ApiError) setErrorText(err.message)
+        }
+    }
+
+    const onLoginWithCode = async () => {
+        try {
+            loginWithCode(emailText)
+            goToModal(ModalState.SUBMIT_CODE)
+        } catch (err) {
+            if (err instanceof ApiError) setErrorText(err.message)   
         }
     }
 
@@ -139,6 +187,7 @@ function App() {
         <Header
             onAccountClick={() => {
                 setModalOpen(true)
+                setModalHistory([])
                 setModalState(loggedIn ? ModalState.VIEW_ACCOUNT : ModalState.SUBMIT_EMAIL)
             }}
         />
@@ -164,12 +213,13 @@ function App() {
             (modalState == ModalState.VIEW_ACCOUNT) ? (
                 <Modal
                     title = "Account"
+                    leftButton = {{ label: "Update", onClick: () => goToModal(ModalState.UPDATE_ACCOUNT), enabled: true }}
                     rightButton = {{ label: "Log out", onClick: onLogout, enabled: true }}
                     onClose = {closeModal}
                     errorMessage={errorText || undefined}
                 >
-                    <p className="text-sm text-muted">{user?.email}</p>
-                    <p className="text-sm text-muted">{user?.username}</p>
+                    <p className="text-sm text-muted"><strong>Email: </strong>{user?.email}</p>
+                    <p className="text-sm text-muted"><strong>Username: </strong>{user?.username}</p>
                 </Modal>
             ) :
             (modalState == ModalState.SUBMIT_EMAIL) ? (
@@ -182,37 +232,50 @@ function App() {
                     <input type="email" placeholder="Email" value={emailText} onChange={e => setEmailText(e.target.value)} className={inputClass} />
                 </Modal>
             ) :
-            (modalState == ModalState.REGISTER) ? (
-                <Modal>
-                </Modal>
-            ) :
             (modalState == ModalState.LOGIN) ? (
                 <Modal
                     title = "Login"
                     rightButton = {{ label: "Log in", onClick: onLogin, enabled: true }}
                     onClose = {closeModal}
-                    onBack={() => setModalState(ModalState.SUBMIT_EMAIL)}
+                    onBack={goBack}
                     errorMessage={errorText || undefined}
                 >
-                    <input type="email" placeholder="Email or Username" value={emailText} className={inputClass} disabled/>
+                    <input type="email" placeholder="Email or username" value={emailText} className={inputClass} disabled/>
                     <input type="password" placeholder="Password" value={passwordText} onChange={e => setPasswordText(e.target.value)} className={inputClass} />
+                    <LinkText
+                        onClick={onLoginWithCode}
+                        className="mx-auto"
+                    >
+                        Use email verification code
+                    </LinkText>
                 </Modal>
             ) :
             (modalState == ModalState.SUBMIT_CODE) ? (
                 <Modal
                     title = "Verify Email"
-                    rightButton = {{ label: "Submit", onClick: onSubmitCode, enabled: true }}
-                    onClose = {() => setModalOpen(false)}
-                    onBack={() => setModalState(ModalState.SUBMIT_EMAIL)}
+                    rightButton = {{ label: "Submit", onClick: onSubmitCode, enabled: codeText.length == VERIFICATION_CODE_LENGTH }}
+                    onClose = {closeModal}
+                    onBack={goBack}
                     errorMessage={errorText || undefined}
                 >
                     <p>We sent an email to <strong>{emailText}</strong> with a verification code!</p>
-                    <input placeholder="Verification Code" value={codeText} onChange={e => setCodeText(e.target.value)} className={inputClass}/>
+                    <input placeholder="Verification code" value={codeText} onChange={e => setCodeText(e.target.value)} className={inputClass}/>
                 </Modal>
-            ) : ( // (modalState == ModalState.UPDATE_ACCOUNT)
-                <Modal>
+            ) : (modalState == ModalState.UPDATE_ACCOUNT) ? (
+                <Modal
+                    title = "Account"
+                    leftButton = {{ label: "Close", onClick: closeModal, enabled: true }}
+                    rightButton = {{ label: "Update", onClick: onUpdateAccount, enabled: updateUserEnabled }}
+                    onClose = {closeModal}
+                    // onBack={() => setModalState(ModalState.SUBMIT_EMAIL)}
+                    errorMessage={errorText || undefined}
+                >
+                    <p>Update your account!</p>
+                    <input placeholder="Username" value={usernameText} onChange={e => setUsernameText(e.target.value)} className={inputClass}/>
+                    <input type="password" placeholder="New password" value={passwordText} onChange={e => setPasswordText(e.target.value)} className={inputClass}/>
+                    <input type="password" placeholder="Confirm password" value={confirmPasswordText} onChange={e => setConfirmPasswordText(e.target.value)} className={inputClass}/>
                 </Modal>
-            )
+            ) : <></>
         )}
     </>)
 }

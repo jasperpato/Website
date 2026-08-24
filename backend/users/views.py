@@ -191,15 +191,13 @@ def update_user(request: Request) -> Response:
     if "password" in request.data:
         password = request.data.get("password", "").strip()
 
-        if not password:
-            return Response({"error": "password is required"}, status=status.HTTP_400_BAD_REQUEST)
+        if password:
+            try:
+                validate_password(password, user=user)
+            except ValidationError as e:
+                return Response({"error": e.messages}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            validate_password(password, user=user)
-        except ValidationError as exc:
-            return Response({"error": exc.messages}, status=status.HTTP_400_BAD_REQUEST)
-
-        user.set_password(password)
+            user.set_password(password)
 
     user.save()
 
