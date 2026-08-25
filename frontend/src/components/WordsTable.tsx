@@ -1,18 +1,28 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle, HelpCircle, XCircle } from 'lucide-react';
-import { updateWord } from '../api';
+import { updateWord, Word } from '../api';
 import Category from './Category';
 import PanelBox from './PanelBox';
 import Table from './Table';
+import TextInput from './TextInput';
 
-function ApprovedCell({ value }) {
+interface ApprovedCellProps {
+  value: boolean | null;
+}
+
+function ApprovedCell({ value }: ApprovedCellProps) {
   if (value === true) return <span className="text-600 text-sm">Approved</span>;
   if (value === false) return <span className="text-500 text-sm">Denied</span>;
   return <span className="text-sm">Pending</span>;
 }
 
-function ApproveActions({ word, onRefresh }) {
-  const handle = async (approved) => {
+interface ApprovedActionProps {
+  word: Word;
+  onRefresh: () => void
+}
+
+function ApproveActions({ word, onRefresh }: ApprovedActionProps) {
+  const handle = async (approved: boolean | null) => {
     await updateWord(word.id, { approved });
     onRefresh();
   };
@@ -33,11 +43,19 @@ function ApproveActions({ word, onRefresh }) {
   );
 }
 
-export default function WordsTable({ words, isStaff, onRefresh }) {
+interface WordsTableProps {
+  words: Array<Word>,
+  isStaff: boolean,
+  onRefresh: () => void
+}
+
+export default function WordsTable({ words, isStaff, onRefresh }: WordsTableProps) {
   const [sortedBy, setSortedBy] = useState('submitted_at');
   const [ascending, setAscending] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [matchedWords, setMatchedWords] = useState<Array<Word>>([]);
 
-  const handleSort = (sortKey) => {
+  const handleSort = (sortKey: string) => {
     if (!sortKey) return;
     if (sortKey === sortedBy) {
       setAscending(a => !a);
@@ -54,7 +72,7 @@ export default function WordsTable({ words, isStaff, onRefresh }) {
     } else if (sortedBy === 'category') {
       sorted.sort((a, b) => (a.category?.name ?? '').localeCompare(b.category?.name ?? ''));
     } else if (sortedBy === 'submitted_at') {
-      sorted.sort((a, b) => new Date(a.submitted_at) - new Date(b.submitted_at));
+      sorted.sort((a, b) => a.word.localeCompare(b.word)); // for now // new Date(a.submitted_at) - new Date(b.submitted_at));
     }
     return ascending ? sorted : sorted.reverse();
   }, [words, sortedBy, ascending]);
@@ -64,6 +82,24 @@ export default function WordsTable({ words, isStaff, onRefresh }) {
     [sortedWords, isStaff]
   );
 
+  const onSearchTextChange = (newSearchText: string) => {
+    setSearchText(newSearchText)
+
+    if (newSearchText == "") setMatchedWords([])
+    else {
+      const startsWith = visibleWords.filter((w: Word) => w.word.toLowerCase().startsWith(newSearchText.toLowerCase()))
+      const includes = visibleWords.filter((w: Word) => w.word.toLowerCase().includes(newSearchText.toLowerCase()) && !startsWith.includes(w)) 
+      setMatchedWords([...startsWith, ...includes])
+    }
+  }
+
+  const finalWords = [...matchedWords, ...visibleWords.filter((w: Word) => !matchedWords.includes(w))]
+
+  interface CellProps {
+    getValue: () => any,
+    row?: any
+  }
+
   const columns = useMemo(() => {
     const base = [
       { accessorKey: 'word', header: 'Word', sortKey: 'alphabetical' },
@@ -71,13 +107,13 @@ export default function WordsTable({ words, isStaff, onRefresh }) {
         accessorKey: 'category',
         header: 'Category',
         sortKey: 'category',
-        cell: ({ getValue }) => <Category category={getValue()} />,
+        cell: ({ getValue }: CellProps) => <Category category={getValue()} />,
       },
       {
         accessorKey: 'submitted_at',
         header: 'Submitted At',
         sortKey: 'submitted_at',
-        cell: ({ getValue }) => {
+        cell: ({ getValue }: CellProps) => {
           const v = getValue();
           return v ? new Date(v).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
         },
@@ -86,8 +122,8 @@ export default function WordsTable({ words, isStaff, onRefresh }) {
         accessorKey: 'approved',
         header: 'Status',
         cell: isStaff
-          ? ({ row }) => <ApproveActions word={row.original} onRefresh={onRefresh} />
-          : ({ getValue }) => <ApprovedCell value={getValue()} />,
+          ? ({ row }: CellProps) => <ApproveActions word={row.original} onRefresh={onRefresh} />
+          : ({ getValue }: CellProps) => <ApprovedCell value={getValue()} />,
       },
     ];
 
@@ -107,7 +143,8 @@ export default function WordsTable({ words, isStaff, onRefresh }) {
 
   return (
     <PanelBox title="Word List">
-      <Table columns={columns} data={visibleWords} pageSize={10} resetPageKey={`${sortedBy}-${ascending}`} />
+      <TextInput value={searchText} onChange={onSearchTextChange} placeholder="Search"/>
+      <Table columns={columns} data={finalWords} pageSize={10} resetPageKey={`${sortedBy}-${ascending}`} />
     </PanelBox>
   );
 }

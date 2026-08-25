@@ -7,7 +7,7 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       <div className="relative">
-        <ListboxButton className={`w-full flex justify-between items-center border border-border rounded px-3 py-2 text-sm outline-none focus:border-secondary bg-white ${disabled ? 'opacity-40 cursor-default' : 'cursor-pointer'}`}>
+        <ListboxButton className={`w-full flex justify-between items-center border border-border rounded px-3 py-2 outline-none focus:border-secondary bg-white ${disabled ? 'opacity-40 cursor-default' : 'cursor-pointer'}`}>
           <span className={`flex items-center gap-2 ${selected ? 'text-black' : 'text-muted'}`}>
             {selected?.color && <span className="inline-block w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: selected.color }} />}
             {selected ? selected.label : placeholder}
@@ -19,7 +19,7 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
             <ListboxOption
               key={o.value}
               value={o.value}
-              className="flex justify-between items-center px-3 py-2 text-sm cursor-pointer hover:bg-gray-50"
+              className="flex justify-between items-center px-3 py-2 cursor-pointer hover:bg-gray-50"
             >
               {({ selected }) => (
                 <>

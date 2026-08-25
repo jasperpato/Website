@@ -10,7 +10,7 @@ export default function LinkText({ children, onClick, className }: LinkTextProps
   return (
     <p
       onClick={onClick}
-      className={`text-primary font-semibold text-sm hover:text-secondary hover:cursor-pointer ${className || ""}`}
+      className={`text-primary hover:text-secondary hover:cursor-pointer ${className || ""}`}
     >
       {children}
     </p>

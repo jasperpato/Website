@@ -123,6 +123,7 @@ export async function updateUser(username: string, password: string): Promise<Us
 
 function check_error(res: Response, data?: any, errorMessage?: string) {
     if (!res.ok) {
+        if (res.status === 401) throw new ApiError('Credentials are incorrect', 401)
         if (res.status === 429) throw new ApiError('Too many requests, come back later', 429)
         throw new ApiError(errorMessage || data.error || data.message || "Error occurred", res.status)
     }
@@ -214,11 +215,7 @@ export async function getWords(): Promise<Word[]> {
 }
 
 export async function getCategories(): Promise<WordCategory[]> {
-    const token = await getValidToken()
-
-    const res = await fetch(`${BASE}/api/categories/`, {
-        headers: { 'Authorization': `Bearer ${token}` },
-    })
+    const res = await fetch(`${BASE}/api/categories/`)
 
     const data = await res.json()
     if (!res.ok) throw new ApiError('Failed to fetch categories')
@@ -247,7 +244,7 @@ export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'
 export async function addWord(word: string, categoryId: number | null = null): Promise<Word> {
     const token = await getValidToken()
 
-    const res = await fetch(`${BASE}/words/`, {
+    const res = await fetch(`${BASE}/api/words/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

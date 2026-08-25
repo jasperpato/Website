@@ -9,8 +9,8 @@ export default function AddWords({ categories, onWordAdded, loggedIn }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (categories.length > 0) setCategoryId(categories[0].id);
-  }, [categories]);
+    if (categories.length > 0 && categoryId === '') setCategoryId(categories[0].id);
+  }, [categories, categoryId]);
 
   const hasCategories = categories.length > 0;
   const canAdd = loggedIn && hasCategories && categoryId !== '' && word.trim().length > 0;
@@ -27,7 +27,7 @@ export default function AddWords({ categories, onWordAdded, loggedIn }) {
     }
   };
 
-  const inputClass = "border border-border rounded px-3 py-2 text-sm outline-none focus:border-secondary w-full";
+  const inputClass = "border border-border rounded px-3 py-2 outline-none focus:border-secondary w-full";
 
   return (
     <PanelBox title="Add Word">
@@ -51,7 +51,7 @@ export default function AddWords({ categories, onWordAdded, loggedIn }) {
         <button
           onClick={handleAdd}
           disabled={!canAdd}
-          className={`px-4 py-2 rounded bg-primary text-white text-sm w-full transition-opacity ${canAdd ? 'cursor-pointer' : 'opacity-40'}`}
+          className={`px-4 py-2 rounded bg-primary text-white w-full transition-opacity ${canAdd ? 'cursor-pointer' : 'opacity-40'}`}
         >
           Add
         </button>

@@ -56,7 +56,7 @@ export default function Table({ columns, data, pageSize = 10, resetPageKey }) {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-between items-center text-sm text-muted px-1">
+      <div className="flex justify-between items-center text-muted px-1">
         <span>{total === 0 ? 'No results' : `${from}–${to} of ${total}`}</span>
         <div className="flex gap-1">
           <button

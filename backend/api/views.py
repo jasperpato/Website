@@ -18,10 +18,24 @@ class IsStaff(BasePermission):
         return bool(request.user and request.user.is_authenticated and request.user.is_staff)
 
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
+@permission_classes([AllowAny])
 def categories(request: Request) -> Response:
-    serializer = CategorySerializer(Category.objects.all(), many=True)
-    return Response(serializer.data)
+    if request.method == "GET":
+        serializer = CategorySerializer(Category.objects.all(), many=True)
+        return Response(serializer.data)
+
+    elif request.method == "POST":
+        if not (request.user.is_authenticated and request.user.is_staff):
+            return Response({"error": "staff permission required"}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CategorySerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(["GET", "POST"])
@@ -35,15 +49,11 @@ def words(request: Request) -> Response:
         if not request.user.is_authenticated:
             return Response({"error": "authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        serializer = WordSerializer(data=request.data)
+        many = isinstance(request.data, list)
+        serializer = WordSerializer(data=request.data, many=many)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        word = serializer.validated_data["word"]
-        
-        if not word.strip():
-            return Response({"error": "word is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save(creator=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

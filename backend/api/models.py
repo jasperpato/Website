@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils import timezone
 from django.conf import settings
 
@@ -9,6 +10,9 @@ class Category(models.Model):
 
     class Meta:
         db_table = "categories"
+        constraints = [
+            models.UniqueConstraint(Lower("name"), name="category_name_ci_unique")
+        ]
 
 
 class Word(models.Model):
@@ -21,4 +25,7 @@ class Word(models.Model):
 
     class Meta:
         db_table = "words"
+        constraints = [
+            models.UniqueConstraint(Lower("word"), name="word_word_ci_unique")
+        ]
 
