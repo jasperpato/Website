@@ -6,7 +6,7 @@ export interface User {
     is_staff: boolean
 }
 
-export interface WordCategory {
+export interface Category {
     id: number
     name: string
     color: string
@@ -15,7 +15,7 @@ export interface WordCategory {
 export interface Word {
     id: number
     word: string
-    category: WordCategory | null
+    category: Category | null
     submitted_at: string
     approved: boolean | null
 }
@@ -214,7 +214,7 @@ export async function getWords(): Promise<Word[]> {
     return data
 }
 
-export async function getCategories(): Promise<WordCategory[]> {
+export async function getCategories(): Promise<Category[]> {
     const res = await fetch(`${BASE}/api/categories/`)
 
     const data = await res.json()

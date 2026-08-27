@@ -101,7 +101,7 @@ def register_email(request: Request) -> Response:
 
     code = f"{random.randint(0, 999999):06d}"
 
-    EmailVerification.objects.update_or_create(user=user, defaults={"code": code})
+    EmailVerification.objects.update_or_create(user=user, defaults={"code": code, "created_at": timezone.now()})
 
     try:
         resend.Emails.send({
@@ -132,7 +132,7 @@ def request_login_code(request: Request) -> Response:
 
     code = f"{random.randint(0, 999999):06d}"
 
-    EmailVerification.objects.update_or_create(user=user, defaults={"code": code})
+    EmailVerification.objects.update_or_create(user=user, defaults={"code": code, "created_at": timezone.now()})
 
     resend.Emails.send({
         "from": settings.RESEND_FROM,

@@ -1,26 +1,53 @@
-import { Link } from 'react-router-dom';
-import { UserCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu as MenuIcon, UserCircle } from 'lucide-react';
 import { useState } from 'react';
-
-interface MenuItem {
-  name: string,
-  onClick: () => void
-}
 
 interface HeaderProps {
   onAccountClick: () => void
-  // menuItems: Array<MenuItem>
 }
 
-export default function Header({ onAccountClick /* menuItems */ }: HeaderProps) {
-  // const [menuOpen, setMenuOpen] = useState(false);
-  
+export default function Header({ onAccountClick }: HeaderProps) {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  const itemClass = "w-full text-left font-semibold px-6 py-4 cursor-pointer bg-transparent border-none hover:bg-gray-50"
+
+  const goTo = (path: string) => {
+    setOpen(false);
+    navigate(path);
+  }
+
   return (
-    <header className="flex justify-between items-center px-6 h-15 border-b border-border">
-      <Link to="/" className="font-bold text-xl text-primary no-underline">JP</Link>
-      <button onClick={onAccountClick} className="cursor-pointer bg-transparent border-none flex items-center text-secondary">
-        <UserCircle size={28} />
-      </button>
-    </header>
+    <>
+      <header className="flex justify-between items-center px-6 h-15 border-b border-border">
+        <div className="flex items-center gap-4">
+          <button onClick={() => setOpen(true)} className="cursor-pointer bg-transparent border-none flex items-center text-secondary">
+            <MenuIcon size={28} />
+          </button>
+          {/* <Link to="/" className="font-bold text-xl text-primary no-underline">JP</Link> */}
+        </div>
+        <button onClick={onAccountClick} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
+          <UserCircle size={28} />
+        </button>
+      </header>
+
+      <div
+        className={`fixed inset-0 bg-black/50 z-50 transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setOpen(false)}
+      />
+      <nav
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
+          Home
+        </button>
+        <button onClick={() => goTo('/play')} className="text-left font-semibold px-6 py-4 cursor-pointer bg-transparent hover:bg-gray-50 text-secondary font-bold border-secondary border-solid border-2 rounded mx-2 my-1">
+          Play!
+        </button>
+        <button onClick={() => goTo('/contribute')} className={`${itemClass} text-primary`}>
+          Contribute
+        </button>
+      </nav>
+    </>
   );
 }

@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle, HelpCircle, XCircle } from 'lucide-react';
-import { updateWord, Word } from '../api';
-import Category from './Category';
-import PanelBox from './PanelBox';
-import Table from './Table';
-import TextInput from './TextInput';
+import { updateWord, Word } from '../../api';
+import Category from '../../components/Category';
+import PanelBox from '../../components/PanelBox';
+import Table from '../../components/Table';
+import TextInput from '../../components/TextInput';
 
 interface ApprovedCellProps {
   value: boolean | null;
@@ -44,7 +44,7 @@ function ApproveActions({ word, onRefresh }: ApprovedActionProps) {
 }
 
 interface WordsTableProps {
-  words: Array<Word>,
+  words: Word[],
   isStaff: boolean,
   onRefresh: () => void
 }
@@ -53,7 +53,7 @@ export default function WordsTable({ words, isStaff, onRefresh }: WordsTableProp
   const [sortedBy, setSortedBy] = useState('submitted_at');
   const [ascending, setAscending] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [matchedWords, setMatchedWords] = useState<Array<Word>>([]);
+  const [matchedWords, setMatchedWords] = useState<Word[]>([]);
 
   const handleSort = (sortKey: string) => {
     if (!sortKey) return;

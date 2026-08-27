@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { addWord } from '../api';
-import Dropdown from './Dropdown';
-import PanelBox from './PanelBox';
+import { addWord } from '../../api';
+import Dropdown from '../../components/Dropdown';
+import PanelBox from '../../components/PanelBox';
 
 export default function AddWords({ categories, onWordAdded, loggedIn }) {
   const [word, setWord] = useState('');
@@ -44,7 +44,7 @@ export default function AddWords({ categories, onWordAdded, loggedIn }) {
           value={word}
           onChange={e => setWord(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
-          placeholder={loggedIn ? "Enter a word" : "Log in to add words"}
+          placeholder={loggedIn ? "Enter a word" : "Sign in to add words"}
           disabled={!loggedIn}
           className={`${inputClass} ${!loggedIn ? 'opacity-40' : ''}`}
         />

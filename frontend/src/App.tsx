@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
 import Modal from './components/Modal'
-import Panel from './components/Panel'
-import AddWords from './components/AddWords'
-import WordsTable from './components/WordsTable'
 import LinkText from './components/LinkText'
+import LandingPage from './pages/landing/LandingPage'
+import ContributePage from './pages/contribute/ContributePage'
+import PlayPage from './pages/play/PlayPage'
 import { BannerProps, BannerType } from './components/Banner'
-import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, WordCategory, updateUser, loginWithCode } from './api'
+import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, updateUser, loginWithCode } from './api'
 
 
 const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -84,7 +85,7 @@ function App() {
 
     const [user, setUser] = useState<User | null>(null)
     const [words, setWords] = useState<Word[]>([])
-    const [categories, setCategories] = useState<WordCategory[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
 
     const fetchMe = useCallback(() => getMe().then((user) => {
         setUser(user)
@@ -189,10 +190,11 @@ function App() {
 
     const onLoginWithCode = async () => {
         try {
-            loginWithCode(emailText)
+            await loginWithCode(emailText)
+            setCodeText("")
             goToModal(ModalState.LOGIN_WITH_CODE)
         } catch (err) {
-            if (err instanceof ApiError) setError(err.message)   
+            if (err instanceof ApiError) setError(err.message)
         }
     }
 
@@ -207,22 +209,23 @@ function App() {
             }}
         />
 
-        <main className="flex flex-col lg:flex-row gap-4 p-4">
-            <Panel>
-                <AddWords
-                    categories={categories}
-                    onWordAdded={fetchObjects}
-                    loggedIn={loggedIn}
-                />
-            </Panel>
-            <Panel>
-                <WordsTable
-                    words={words}
-                    isStaff={user?.is_staff === true}
-                    onRefresh={fetchObjects}
-                />
-            </Panel>
-        </main>
+        <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route
+                path="/contribute"
+                element={
+                    <ContributePage
+                        words={words}
+                        categories={categories}
+                        user={user}
+                        loggedIn={loggedIn}
+                        onWordAdded={fetchObjects}
+                        onRefresh={fetchObjects}
+                    />
+                }
+            />
+            <Route path="/play" element={<PlayPage categories={categories} words={words} />} />
+        </Routes>
 
         {modalOpen && (
             (modalState == ModalState.VIEW_ACCOUNT) ? (
@@ -250,7 +253,7 @@ function App() {
             (modalState == ModalState.LOGIN) ? (
                 <Modal
                     title = "Login"
-                    rightButton = {{ label: "Log in", onClick: onLogin, enabled: true }}
+                    rightButton = {{ label: "Sign in", onClick: onLogin, enabled: true }}
                     onClose = {closeModal}
                     onBack={goBack}
                     bannerProps={bannerProps}
@@ -276,6 +279,14 @@ function App() {
                 >
                     <p>We sent an email to <strong>{emailText}</strong> with a verification code!</p>
                     <input placeholder="Verification code" value={codeText} onChange={e => setCodeText(e.target.value)} className={inputClass}/>
+                    <div className="flex justify-center gap-8">
+                        <a href="https://mail.google.com/" target="_blank" rel="noopener noreferrer" aria-label="Open Gmail" className="flex items-center justify-center hover:opacity-70">
+                            <img src="/gmail_icon.svg" alt="Gmail" className="w-6 h-6" />
+                        </a>
+                        <a href="https://outlook.cloud.microsoft/mail/" target="_blank" rel="noopener noreferrer" aria-label="Open Outlook" className="flex items-center justify-center hover:opacity-70">
+                            <img src="/outlook_icon.svg" alt="Outlook" className="w-6 h-6" />
+                        </a>
+                    </div>
                 </Modal>
             ) : (modalState == ModalState.UPDATE_ACCOUNT) ? (
                 <Modal
