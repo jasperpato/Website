@@ -6,42 +6,42 @@ import PanelBox from '../../components/PanelBox';
 import Table from '../../components/Table';
 import TextInput from '../../components/TextInput';
 
-interface ApprovedCellProps {
-  value: boolean | null;
-}
+// interface ApprovedCellProps {
+//   value: boolean | null;
+// }
 
-function ApprovedCell({ value }: ApprovedCellProps) {
-  if (value === true) return <span className="text-600 text-sm">Approved</span>;
-  if (value === false) return <span className="text-500 text-sm">Denied</span>;
-  return <span className="text-sm">Pending</span>;
-}
+// function ApprovedCell({ value }: ApprovedCellProps) {
+//   if (value === true) return <span className="text-600 text-sm">Approved</span>;
+//   if (value === false) return <span className="text-500 text-sm">Denied</span>;
+//   return <span className="text-sm">Pending</span>;
+// }
 
-interface ApprovedActionProps {
-  word: Word;
-  onRefresh: () => void
-}
+// interface ApprovedActionProps {
+//   word: Word;
+//   onRefresh: () => void
+// }
 
-function ApproveActions({ word, onRefresh }: ApprovedActionProps) {
-  const handle = async (approved: boolean | null) => {
-    await updateWord(word.id, { approved });
-    onRefresh();
-  };
+// function ApproveActions({ word, onRefresh }: ApprovedActionProps) {
+//   const handle = async (approved: boolean | null) => {
+//     await updateWord(word.id, { approved });
+//     onRefresh();
+//   };
 
-  return (
-    <div className="flex items-center gap-2">
-      <ApprovedCell value={word.approved} />
-      <button onClick={() => handle(false)} className="cursor-pointer text-error hover:opacity-70">
-        <XCircle size={18} />
-      </button>
-      <button onClick={() => handle(null)} className="cursor-pointer text-warning hover:opacity-70">
-        <HelpCircle size={18} />
-      </button>
-      <button onClick={() => handle(true)} className="cursor-pointer text-success hover:opacity-70">
-        <CheckCircle size={18} />
-      </button>
-    </div>
-  );
-}
+//   return (
+//     <div className="flex items-center gap-2">
+//       <ApprovedCell value={word.approved} />
+//       <button onClick={() => handle(false)} className="cursor-pointer text-error hover:opacity-70">
+//         <XCircle size={18} />
+//       </button>
+//       <button onClick={() => handle(null)} className="cursor-pointer text-warning hover:opacity-70">
+//         <HelpCircle size={18} />
+//       </button>
+//       <button onClick={() => handle(true)} className="cursor-pointer text-success hover:opacity-70">
+//         <CheckCircle size={18} />
+//       </button>
+//     </div>
+//   );
+// }
 
 interface WordsTableProps {
   words: Word[],
@@ -77,10 +77,12 @@ export default function WordsTable({ words, isStaff, onRefresh }: WordsTableProp
     return ascending ? sorted : sorted.reverse();
   }, [words, sortedBy, ascending]);
 
-  const visibleWords = useMemo(() =>
-    isStaff ? sortedWords : sortedWords.filter(w => w.approved !== false),
-    [sortedWords, isStaff]
-  );
+  // const visibleWords = useMemo(() =>
+  //   isStaff ? sortedWords : sortedWords.filter(w => w.approved !== false),
+  //   [sortedWords, isStaff]
+  // );
+
+  const visibleWords = sortedWords
 
   const onSearchTextChange = (newSearchText: string) => {
     setSearchText(newSearchText)
@@ -118,13 +120,13 @@ export default function WordsTable({ words, isStaff, onRefresh }: WordsTableProp
           return v ? new Date(v).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' }) : '—';
         },
       },
-      {
-        accessorKey: 'approved',
-        header: 'Status',
-        cell: isStaff
-          ? ({ row }: CellProps) => <ApproveActions word={row.original} onRefresh={onRefresh} />
-          : ({ getValue }: CellProps) => <ApprovedCell value={getValue()} />,
-      },
+      // {
+      //   accessorKey: 'approved',
+      //   header: 'Status',
+      //   cell: isStaff
+      //     ? ({ row }: CellProps) => <ApproveActions word={row.original} onRefresh={onRefresh} />
+      //     : ({ getValue }: CellProps) => <ApprovedCell value={getValue()} />,
+      // },
     ];
 
     return base.map(col => ({

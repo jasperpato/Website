@@ -1,6 +1,6 @@
 import random
 import resend
-from resend.exceptions import ValidationError
+from resend.exceptions import ValidationError as ResendValidationError
 from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes, throttle_scope
 from rest_framework.permissions import AllowAny, BasePermission, IsAuthenticated
@@ -110,8 +110,8 @@ def register_email(request: Request) -> Response:
             "subject": "Your verification code",
             "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
         })
-    except ValidationError:
-        Response({"error": "email is invalid"}, status=status.HTTP_400_BAD_REQUEST)
+    except ResendValidationError:
+        return Response({"error": "email is invalid"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"message": "verification code sent"}, status=status.HTTP_201_CREATED)
 
@@ -134,12 +134,15 @@ def request_login_code(request: Request) -> Response:
 
     EmailVerification.objects.update_or_create(user=user, defaults={"code": code, "created_at": timezone.now()})
 
-    resend.Emails.send({
-        "from": settings.RESEND_FROM,
-        "to": email,
-        "subject": "Your verification code",
-        "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
-    })
+    try:
+        resend.Emails.send({
+            "from": settings.RESEND_FROM,
+            "to": email,
+            "subject": "Your verification code",
+            "html": f"<p>Your verification code is <strong>{code}</strong>. It expires in 10 minutes.</p>",
+        })
+    except ResendValidationError:
+        return Response({"error": "email is invalid"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"message": "verification code sent"}, status=status.HTTP_201_CREATED)
 

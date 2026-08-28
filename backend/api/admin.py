@@ -16,12 +16,20 @@ def approve_words(modeladmin, request, queryset):
 @admin.action(description="Export selected words to JSON")
 def export_words_json(modeladmin, request, queryset):
     data = {}
-    for word in queryset.select_related("category").order_by("category__name", "word"):
-        category_name = word.category.name if word.category else "Uncategorized"
-        data.setdefault(category_name, []).append(word.word)
+    words = queryset.exclude(approved=False).select_related("category").order_by("category__name", "word")
+    for word in words:
+        if word.category:
+            category_name = word.category.name
+            color = word.category.color
+        else:
+            category_name = "Uncategorized"
+            color = None
+
+        category_data = data.setdefault(category_name, {"color": color, "words": []})
+        category_data["words"].append(word.word)
 
     response = HttpResponse(json.dumps(data, indent=2), content_type="application/json")
-    response["Content-Disposition"] = "attachment; filename=words_export.json"
+    response["Content-Disposition"] = "attachment; filename=data.json"
     return response
 
 

@@ -2,21 +2,21 @@ import requests
 import json
 from pathlib import Path
 from dotenv import dotenv_values
-from itertools import batched
 
 
 BACKEND_DIR = Path(__file__).parent.parent
 SCRIPT_DIR = Path(__file__).parent
 DATA_DIR = SCRIPT_DIR / "data"
 
-POST_BATCH_SIZE = 100
 DATA_MAX_PRINT_LENGTH = 50
 
 ENV = dotenv_values(BACKEND_DIR / ".env")
 
-def read_json(filename: str):
+
+def read_json(filename: str) -> dict:
     with open(filename, 'r') as f:
         return json.load(f)
+
 
 def request(url_suffix: str, data: dict, auth: "AuthSession | None" = None, method: str = "POST"):
     method = method.upper()
@@ -42,13 +42,7 @@ def request(url_suffix: str, data: dict, auth: "AuthSession | None" = None, meth
                 raise
 
     except Exception as e:
-        # for now
-        # if method == "PATCH":
-        #     data_str = str(data)
-        #     print(f"Error {method.lower()}ing {{ data: ${data_str[:DATA_MAX_PRINT_LENGTH]}{"..." if len(data_str) > DATA_MAX_PRINT_LENGTH else ""} }}: {e}")
-
         print(f"{method.capitalize()} failed for for {data}: {e}")
-
         return None
 
     return res.json()

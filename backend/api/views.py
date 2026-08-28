@@ -45,7 +45,7 @@ def categories(request: Request) -> Response:
 @permission_classes([AllowAny])
 def words(request: Request) -> Response:
     if request.method == "GET":
-        serializer = WordSerializer(Word.objects.all(), many=True)
+        serializer = WordSerializer(Word.objects.filter(approved=True), many=True)
         return Response(serializer.data)
 
     elif request.method == "POST":
@@ -53,7 +53,20 @@ def words(request: Request) -> Response:
             return Response({"error": "authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
 
         many = isinstance(request.data, list)
-        serializer = WordSerializer(data=request.data, many=many)
+        items = request.data if many else [request.data]
+
+        allowed_fields = {"word", "category_id", "category_name"}
+        if is_staff(request.user):
+            allowed_fields |= {"approved", "reported"}
+
+        for item in items:
+            if set(item.keys()) - allowed_fields:
+                return Response(
+                    {"error": "only word and category may be set"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+        serializer = WordSerializer(data=request.data, many=many, context={"request": request})
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -85,7 +98,7 @@ def update_word(request, word_id):
         word.reported = request.data["reported"] == True
         word.reported_at = timezone.now() if word.reported else None
 
-    serializer = WordSerializer(word, data=request.data, partial=True)
+    serializer = WordSerializer(word, data=request.data, partial=True, context={"request": request})
 
     if not serializer.is_valid():
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

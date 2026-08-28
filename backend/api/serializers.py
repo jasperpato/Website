@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from .models import Category, Word
 
@@ -22,8 +23,28 @@ class WordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Word
-        fields = ["id", "word", "creator", "category", "category_id", "approved", "submitted_at", "approved_at"]
-        read_only_fields = ["approved", "submitted_at", "approved_at"]
+        fields = [
+            "id", "word", "creator", "category", "category_id",
+            "approved", "submitted_at", "approved_at",
+            "reported", "reported_at",
+        ]
+        read_only_fields = ["submitted_at", "approved_at", "reported_at"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get("request")
+        is_staff = bool(
+            request and request.user and request.user.is_authenticated and request.user.is_staff
+        )
+        if not is_staff:
+            self.fields["approved"].read_only = True
+
+    def create(self, validated_data):
+        if validated_data.get("approved"):
+            validated_data["approved_at"] = timezone.now()
+        if validated_data.get("reported"):
+            validated_data["reported_at"] = timezone.now()
+        return super().create(validated_data)
 
     def to_internal_value(self, data):
         if isinstance(data, dict) and 'category_name' in data and 'category_id' not in data:
@@ -36,6 +57,9 @@ class WordSerializer(serializers.ModelSerializer):
         return super().to_internal_value(data)
 
     def validate_word(self, value):
-        if Word.objects.filter(word__iexact=value).exists():
+        queryset = Word.objects.filter(word__iexact=value)
+        if self.instance is not None:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if queryset.exists():
             raise serializers.ValidationError("This word already exists.")
         return value
