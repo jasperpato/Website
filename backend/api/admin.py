@@ -1,5 +1,8 @@
+import json
+
 from django.contrib import admin
 from django.db.models import Count
+from django.http import HttpResponse
 from django.utils import timezone
 
 from .models import Category, Word
@@ -10,12 +13,24 @@ def approve_words(modeladmin, request, queryset):
     queryset.update(approved=True, approved_at=timezone.now())
 
 
+@admin.action(description="Export selected words to JSON")
+def export_words_json(modeladmin, request, queryset):
+    data = {}
+    for word in queryset.select_related("category").order_by("category__name", "word"):
+        category_name = word.category.name if word.category else "Uncategorized"
+        data.setdefault(category_name, []).append(word.word)
+
+    response = HttpResponse(json.dumps(data, indent=2), content_type="application/json")
+    response["Content-Disposition"] = "attachment; filename=words_export.json"
+    return response
+
+
 class WordAdmin(admin.ModelAdmin):
-    list_display = ["word", "category", "creator", "approved", "submitted_at", "approved_at"]
+    list_display = ["word", "category", "creator", "approved", "submitted_at", "approved_at", "reported", "reported_at"]
     list_filter = ["category", "approved"]
     search_fields = ["word", "creator__email", "category__name"]
     date_hierarchy = "submitted_at"
-    actions = [approve_words]
+    actions = [approve_words, export_words_json]
 
 
 class CategoryAdmin(admin.ModelAdmin):

@@ -22,9 +22,14 @@ class Word(models.Model):
     word = models.CharField(max_length=255)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="words")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name="words")
-    approved = models.BooleanField(null=True, default=None)
+
     submitted_at = models.DateTimeField(auto_now_add=True)
+
+    approved = models.BooleanField(null=True, default=None)
     approved_at = models.DateTimeField(null=True, blank=True, default=None)
+
+    reported = models.BooleanField(default=False)
+    reported_at = models.DateTimeField(null=True, blank=True, default=None)
 
     class Meta:
         db_table = "words"

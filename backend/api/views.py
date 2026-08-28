@@ -17,6 +17,9 @@ class IsStaff(BasePermission):
     def has_permission(self, request: Request, view: APIView) -> bool:
         return bool(request.user and request.user.is_authenticated and request.user.is_staff)
 
+def is_staff(user) -> bool:
+    return user.is_authenticated and user.is_staff
+
 
 @api_view(["GET", "POST"])
 @permission_classes([AllowAny])
@@ -26,7 +29,7 @@ def categories(request: Request) -> Response:
         return Response(serializer.data)
 
     elif request.method == "POST":
-        if not (request.user.is_authenticated and request.user.is_staff):
+        if not is_staff(request.user):
             return Response({"error": "staff permission required"}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = CategorySerializer(data=request.data)
@@ -60,16 +63,27 @@ def words(request: Request) -> Response:
 
 
 @api_view(["PATCH"])
-@permission_classes([IsStaff])
+@permission_classes([AllowAny])
 def update_word(request, word_id):
     try:
         word = Word.objects.get(id=word_id)
     except Word.DoesNotExist:
         return Response({"error": "word not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    non_reported_fields = set(request.data.keys()) - {"reported"}
+    if non_reported_fields and not is_staff(request.user):
+        return Response({"error": "staff permission required"}, status=status.HTTP_403_FORBIDDEN)
+
     if "approved" in request.data:
         word.approved = request.data["approved"] == True
         word.approved_at = timezone.now() if word.approved else None
+
+    if "word" in request.data:
+        word.word = request.data["word"]
+
+    if "reported" in request.data:
+        word.reported = request.data["reported"] == True
+        word.reported_at = timezone.now() if word.reported else None
 
     serializer = WordSerializer(word, data=request.data, partial=True)
 
