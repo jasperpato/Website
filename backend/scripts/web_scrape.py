@@ -70,13 +70,14 @@ def scrape_category(driver, category_name, post):
 
 
 if __name__ == '__main__':
-    auth = AuthSession(ENV["ADMIN_EMAIL"], ENV["ADMIN_PASSWORD"])
+    auth = AuthSession()
 
     CATEGORY_NAME_OVERRIDES = {"people": "person"}
 
     def post(word, category_name):
         category_name = category_name.lower()
         category_name = CATEGORY_NAME_OVERRIDES.get(category_name, category_name)
+
         return request(
             url_suffix="/api/words/",
             data={"word": word, "category_name": category_name},
@@ -111,5 +112,6 @@ if __name__ == '__main__':
     button.click()
     time.sleep(CLICK_DELAY)
     scrape_category(driver, category_name, post)
+
 
     driver.quit()

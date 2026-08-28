@@ -61,9 +61,9 @@ def fetch(url_suffix: str):
 
 
 class AuthSession:
-    def __init__(self, email: str, password: str):
-        self.email = email
-        self.password = password
+    def __init__(self):
+        self.email = ENV["API_USER_EMAIL"]
+        self.password = ENV["API_USER_PASSWORD"]
         self.access_token = None
         self.refresh_token = None
         self.login()
