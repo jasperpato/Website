@@ -14,6 +14,9 @@ class Category(models.Model):
             models.UniqueConstraint(Lower("name"), name="category_name_ci_unique")
         ]
 
+    def __str__(self):
+        return self.name
+
 
 class Word(models.Model):
     word = models.CharField(max_length=255)

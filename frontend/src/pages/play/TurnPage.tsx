@@ -32,7 +32,7 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
 
     return <>
         <div className="relative flex items-center justify-center px-6 h-15">
-            <button onClick={() => setTurn(false)} className="absolute left-6 cursor-pointer bg-transparent border-none flex items-center text-muted hover:text-primary text-primary">
+            <button onClick={() => setTurn(false)} className="absolute left-6 cursor-pointer bg-transparent border-none flex items-center text-muted hover:text-primary" style={category ? { color: category.color } : undefined}>
                 <ArrowLeft size={28} />
             </button>
             <p className="font-bold text-2xl" style={category ? { color: category.color } : undefined}>{category?.name}</p>

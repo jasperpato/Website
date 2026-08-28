@@ -1,8 +1,34 @@
 from django.contrib import admin
+from django.db.models import Count
+from django.utils import timezone
+
 from .models import Category, Word
 
-class WordAdmin(admin.ModelAdmin):
-    list_display = ["word"]
 
-admin.site.register(Category)
+@admin.action(description="Approve selected words")
+def approve_words(modeladmin, request, queryset):
+    queryset.update(approved=True, approved_at=timezone.now())
+
+
+class WordAdmin(admin.ModelAdmin):
+    list_display = ["word", "category", "creator", "approved", "submitted_at", "approved_at"]
+    list_filter = ["category", "approved"]
+    search_fields = ["word", "creator__email", "category__name"]
+    date_hierarchy = "submitted_at"
+    actions = [approve_words]
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ["name", "color", "word_count"]
+    search_fields = ["name"]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(_word_count=Count("words"))
+
+    @admin.display(description="Words", ordering="_word_count")
+    def word_count(self, obj):
+        return obj._word_count
+
+
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Word, WordAdmin)
