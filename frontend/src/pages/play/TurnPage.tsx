@@ -56,7 +56,7 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
 
         <p className="font-bold text-3xl text-center py-16">{currentWord?.word}</p>
 
-        <div className="flex justify-center gap-3 mt-4">
+        <div className="flex justify-center gap-8 mt-4">
             <Button
                 label="Skip"
                 onClick={() => {
@@ -64,7 +64,7 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
                     setCurrentWord(pickWord())
                 }}
                 enabled={categoryWords.length > 0}
-                className="w-30"
+                className="w-32"
             />
 
             <Button
@@ -76,7 +76,7 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
                 }}
                 enabled={categoryWords.length > 0}
                 style={category ? { backgroundColor: category.color, borderColor: category.color } : undefined}
-                className="w-30"
+                className="w-32"
             />
         </div>
 
