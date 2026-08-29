@@ -4,15 +4,14 @@ import { useEffect, useState } from 'react';
 
 interface BannerTypeProps {
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>
-  textColor: string,
-  borderColor: string,
-  backgroundColor: string,
+  color: string,
 }
 
 export const BannerType = Object.freeze({
-  INFO: { icon: HelpCircle, textColor: "text-warning", borderColor: "border-warning", backgroundColor: "bg-warning/12" } as BannerTypeProps,
-  ERROR: { icon: AlertCircle, textColor: "text-error", borderColor: "border-error", backgroundColor: "bg-error/12" } as BannerTypeProps,
-  SUCCESS: { icon: CheckCircle, textColor: "text-success", borderColor: "border-success", backgroundColor: "bg-success/12" } as BannerTypeProps,
+  INFO: { icon: HelpCircle, color: "warning" } as BannerTypeProps,
+  ERROR: { icon: AlertCircle, color: "error" } as BannerTypeProps,
+  // SUCCESS: { icon: CheckCircle, textColor: "text-success", borderColor: "border-success", backgroundColor: "bg-success/12" } as BannerTypeProps,
+  SUCCESS: { icon: CheckCircle, color: "success" } as BannerTypeProps,
 });
 
 type BannerType = typeof BannerType[keyof typeof BannerType]
@@ -33,10 +32,15 @@ export function Banner({ text, type, duration, className, key }: BannerProps) {
     if (duration) setTimeout(() => setVisible(false), duration)
   }, [key]);
   
+  const color = `var(--color-${type.color})`
+
   return visible ? (
-    <div className={`flex items-center gap-2 ${type.textColor} border ${type.borderColor} ${type.backgroundColor} rounded px-3 py-2 ${className || ""}`}>
+    <div
+      className={`flex items-center gap-2 border rounded px-3 py-2 ${className || ""}`}
+      style={{ color, borderColor: color, backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)` }}
+    >
       <type.icon size={18} className="shrink-0" />
-      <span className={type.textColor}>{text}</span>
+      <span>{text}</span>
     </div>
   ) : <></>;
 }

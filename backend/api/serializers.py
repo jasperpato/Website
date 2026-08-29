@@ -7,7 +7,7 @@ from .models import Category, Word
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "name", "color"]
+        fields = ["id", "name", "color", "order"]
 
     def validate_name(self, value):
         if Category.objects.filter(name__iexact=value).exists():

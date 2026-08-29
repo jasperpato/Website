@@ -42,7 +42,8 @@ class WordAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ["name", "color", "word_count"]
+    list_display = ["name", "color", "order", "word_count"]
+    list_editable = ["order"]
     search_fields = ["name"]
 
     def get_queryset(self, request):
