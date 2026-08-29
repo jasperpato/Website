@@ -20,7 +20,7 @@ export default function PlayLandingPage({ categories, seconds, setSeconds, setCa
 
     return <>
         <main className="flex flex-col items-center gap-6 p-8 max-sm:portrait:min-h-[calc(100vh-3.75rem)]">
-            <div className="w-full">
+            <div className="max-sm:portrait:w-full">
                 <Dropdown
                     value={seconds}
                     onChange={setSeconds}
