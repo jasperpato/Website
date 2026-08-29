@@ -11,9 +11,6 @@ if __name__ == '__main__':
     existing_words = {w["word"].lower() for w in fetch("/api/words/") or []}
     existing_categories = {c["name"].lower() for c in fetch("/api/categories/") or []}
 
-    print(existing_categories)
-    print(existing_words)
-
     auth = AuthSession()
 
     for category_name, category_data in data.items():
