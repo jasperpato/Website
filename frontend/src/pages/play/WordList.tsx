@@ -14,13 +14,13 @@ export default function WordList({ title, words, onWordClick, color }: WordListP
                 {words.length > 0 ? title : ""}
             </p>
             <div className="flex flex-col gap-1">
-                {words.map((w: Word) => (
+                {words.map((w: Word, i: number) => (
                     <div
                         key={w.id}
                         onClick={() => onWordClick(w)}
-                        className="px-3 py-2 rounded border border-border bg-white cursor-pointer truncate transition-opacity hover:opacity-70"
+                        className="px-3 py-2 rounded border border-border cursor-pointer truncate transition-opacity hover:opacity-70"
                     >
-                        {w.word}
+                        {i+1}. {w.word}
                     </div>
                 ))}
             </div>

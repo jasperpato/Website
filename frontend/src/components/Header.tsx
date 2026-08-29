@@ -37,7 +37,7 @@ export default function Header({ onAccountClick }: HeaderProps) {
         onClick={() => setOpen(false)}
       />
       <nav
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[Canvas] shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="mx-4 my-2 mt-4">
           <BigButton text="Play!" onClick={() => goTo('/play')} color="var(--color-secondary)" fullWidth small />
