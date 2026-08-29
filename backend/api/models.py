@@ -17,7 +17,7 @@ class Category(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return self.name # ok
 
 
 class Word(models.Model):
