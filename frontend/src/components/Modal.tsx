@@ -49,7 +49,7 @@ export default function Modal({ title, onClose, onBack, leftButton, rightButton,
         // >
         //     
         <Scrim onClose={onClose}>
-            <div className="rounded-lg w-full max-w-md mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-white rounded-lg w-full max-w-md mx-4 flex flex-col" onClick={e => e.stopPropagation()}>
                 <div className="relative flex items-center justify-center p-4 border-b border-border">
                     {onBack && (
                         <button onClick={onBack} className="absolute left-4 cursor-pointer bg-transparent border-none flex items-center text-muted hover:text-primary">
