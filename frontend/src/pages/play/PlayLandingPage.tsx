@@ -29,15 +29,18 @@ export default function PlayLandingPage({ categories, seconds, setSeconds, setCa
             </div> */}
 
             <div className="flex flex-col gap-4 max-sm:portrait:flex-1 max-sm:portrait:w-full"> {/* max-sm:portrait:justify-evenly"> */}
-                {categories.map(c => (
-                    <BigButton
-                        key={c.id}
-                        text={c.name}
-                        color={c.color}
-                        onClick={() => onClick(c)}
-                        className="max-sm:portrait:w-full"
-                    />
-                ))}
+                {categories
+                    .sort((a: Category, b: Category) => a.order - b.order)
+                    .map(c => (
+                        <BigButton
+                            key={c.id}
+                            text={c.name}
+                            color={c.color}
+                            onClick={() => onClick(c)}
+                            className="max-sm:portrait:w-full"
+                        />
+                    )
+                )}
             </div>
         </main>
     </>
