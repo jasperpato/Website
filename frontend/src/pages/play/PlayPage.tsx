@@ -4,6 +4,7 @@ import BigButton from '../../components/BigButton'
 import { Category, Word } from '../../api'
 import PlayLandingPage from './PlayLandingPage'
 import TurnPage from './TurnPage'
+import LoadingMessage from '../../components/LoadingMessage'
 
 interface PlayPageProps {
     categories: Category[],
@@ -19,17 +20,19 @@ export default function PlayPage({ categories, words }: PlayPageProps) {
     const [turn, setTurn] = useState(false)
 
     return (
-        turn ? <TurnPage
-            words={words}
-            seconds={seconds}
-            category={category}
-            setTurn={setTurn}
-        /> : <PlayLandingPage
-            categories={categories}
-            seconds={seconds}
-            setSeconds={setSeconds}
-            setCategory={setCategory}
-            setTurn={setTurn}
-        />
+        (categories.length > 0 && words.length > 0) ? (
+            turn ? <TurnPage
+                words={words}
+                seconds={seconds}
+                category={category}
+                setTurn={setTurn}
+            /> : <PlayLandingPage
+                categories={categories}
+                seconds={seconds}
+                setSeconds={setSeconds}
+                setCategory={setCategory}
+                setTurn={setTurn}
+            />
+        ) : <LoadingMessage />
     )
 }
