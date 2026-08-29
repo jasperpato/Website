@@ -24,7 +24,7 @@ def request(url_suffix: str, data: dict, auth: "AuthSession | None" = None, meth
     def send():
         headers = {"Authorization": f"Bearer {auth.access_token}"} if auth else None
         res = (requests.post if method == "POST" else requests.patch)(
-            url = f'{ENV["URL"].rstrip("/")}/{url_suffix.strip("/")}/',
+            url = f'{ENV["BACKEND_URL"].rstrip("/")}/{url_suffix.strip("/")}/',
             json=data,
             headers=headers,
         )
@@ -50,7 +50,7 @@ def request(url_suffix: str, data: dict, auth: "AuthSession | None" = None, meth
 
 def fetch(url_suffix: str):
     try:
-        res = requests.get(f'{ENV["URL"].rstrip("/")}/{url_suffix.strip("/")}/')
+        res = requests.get(f'{ENV["BACKEND_URL"].rstrip("/")}/{url_suffix.strip("/")}/')
         res.raise_for_status()
 
     except Exception as e:

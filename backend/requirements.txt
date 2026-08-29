@@ -6,9 +6,9 @@ django-cors-headers
 whitenoise
 psycopg2-binary
 python-dotenv
-Pillow
-pytesseract
+# Pillow
+# pytesseract
 requests
-selenium
+# selenium
 resend
 gunicorn
