@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / '.env')
 
-SECRET_KEY = env('DJANGO_SECRET_KEY', default='django-insecure-*u$@li(%k@hb&&a90w!o_93%c!9g9ey8)kbf7oj45ji&034tzx')
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 DEBUG = env.bool('DEBUG', default=True)
 
@@ -44,10 +44,7 @@ INSTALLED_APPS = [
     'users'
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'https://jasperpato.com',
-]
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[]) 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
