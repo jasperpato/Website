@@ -19,22 +19,23 @@ export default function PlayLandingPage({ categories, seconds, setSeconds, setCa
     }
 
     return <>
-        <main className="flex flex-col items-center gap-6 p-4">
-            <div className="w-48">
+        <main className="flex flex-col items-center gap-6 p-8 max-sm:portrait:min-h-[calc(100vh-3.75rem)]">
+            {/* <div className="w-48">
                 <Dropdown
                     value={seconds}
                     onChange={setSeconds}
                     options={TIME_OPTIONS.map(s => ({ value: s, label: `${s} seconds` }))}
                 />
-            </div>
+            </div> */}
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 max-sm:portrait:flex-1 max-sm:portrait:w-full"> {/* max-sm:portrait:justify-evenly"> */}
                 {categories.map(c => (
                     <BigButton
                         key={c.id}
                         text={c.name}
                         color={c.color}
                         onClick={() => onClick(c)}
+                        className="max-sm:portrait:w-full"
                     />
                 ))}
             </div>

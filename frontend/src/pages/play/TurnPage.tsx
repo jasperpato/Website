@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { ArrowLeft } from "lucide-react"
 import { Category, Word } from "../../api"
+import WordList from "./WordList"
+import Button from "../../components/Button"
 
 interface TurnPageProps {
     words: Word[],
@@ -19,6 +21,19 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
         : undefined
 
     const [currentWord, setCurrentWord] = useState<Word | undefined>(pickWord)
+
+    const [gotWords, setGotWords] = useState<Word[]>([])
+    const [skippedWords, setSkippedWords] = useState<Word[]>([])
+
+    const moveToGot = (word: Word) => {
+        setSkippedWords(prev => prev.filter((w: Word) => w != word))
+        setGotWords(prev => [...prev, word])
+    }
+
+    const moveToSkipped = (word: Word) => {
+        setGotWords(prev => prev.filter((w: Word) => w != word))
+        setSkippedWords(prev => [...prev, word])
+    }
 
     useEffect(() => {
         if (remaining <= 0) return
@@ -41,15 +56,33 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
 
         <p className="font-bold text-3xl text-center py-16">{currentWord?.word}</p>
 
-        <div className="flex justify-center mt-4">
-            <button
-                onClick={() => setCurrentWord(pickWord())}
-                disabled={categoryWords.length === 0}
-                style={category ? { backgroundColor: category.color } : undefined}
-                className={`px-4 py-2 rounded bg-primary text-white transition-opacity ${categoryWords.length === 0 ? 'opacity-40' : 'cursor-pointer'}`}
-            >
-                Got it!
-            </button>
+        <div className="flex justify-center gap-3 mt-4">
+            <Button
+                label="Skip"
+                onClick={() => {
+                    currentWord && setSkippedWords(prev => [...prev, currentWord])
+                    setCurrentWord(pickWord())
+                }}
+                enabled={categoryWords.length > 0}
+                className="w-30"
+            />
+
+            <Button
+                label="Got it!"
+                primary
+                onClick={() => {
+                    currentWord && setGotWords(prev => [...prev, currentWord])
+                    setCurrentWord(pickWord())
+                }}
+                enabled={categoryWords.length > 0}
+                style={category ? { backgroundColor: category.color, borderColor: category.color } : undefined}
+                className="w-30"
+            />
+        </div>
+
+        <div className="flex gap-4 mt-6 px-4">
+            <WordList title="Skipped" words={skippedWords} onWordClick={moveToGot} />
+            <WordList title="Got" words={gotWords} onWordClick={moveToSkipped} color={category?.color} />
         </div>
     </>
 }

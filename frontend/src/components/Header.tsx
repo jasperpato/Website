@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu as MenuIcon, UserCircle } from 'lucide-react';
 import { useState } from 'react';
+import BigButton from './BigButton';
 
 interface HeaderProps {
   onAccountClick: () => void
@@ -38,12 +39,12 @@ export default function Header({ onAccountClick }: HeaderProps) {
       <nav
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
+        <div className="mx-4 my-2 mt-4">
+          <BigButton text="Play!" onClick={() => goTo('/play')} color="var(--color-secondary)" fullWidth small />
+        </div>
+        {/* <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
           Home
-        </button>
-        <button onClick={() => goTo('/play')} className="text-left font-semibold px-6 py-4 cursor-pointer bg-transparent hover:bg-gray-50 text-secondary font-bold border-secondary border-solid border-2 rounded mx-2 my-1">
-          Play!
-        </button>
+        </button> */}
         <button onClick={() => goTo('/contribute')} className={`${itemClass} text-primary`}>
           Contribute
         </button>
