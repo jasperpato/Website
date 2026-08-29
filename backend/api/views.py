@@ -45,7 +45,7 @@ def categories(request: Request) -> Response:
 @permission_classes([AllowAny])
 def words(request: Request) -> Response:
     if request.method == "GET":
-        serializer = WordSerializer(Word.objects.filter(approved=True), many=True)
+        serializer = WordSerializer(Word.objects.filter(approved=True).select_related("category"), many=True)
         return Response(serializer.data)
 
     elif request.method == "POST":
