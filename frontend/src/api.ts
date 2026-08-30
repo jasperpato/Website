@@ -10,7 +10,8 @@ export interface Category {
     id: number
     name: string
     color: string
-    order: number
+    card_order: number
+    board_order: number
 }
 
 export interface Word {

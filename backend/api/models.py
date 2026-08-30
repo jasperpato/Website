@@ -7,11 +7,12 @@ from django.conf import settings
 class Category(models.Model):
     name = models.CharField(max_length=255)
     color = models.CharField(max_length=255)
-    order = models.IntegerField(default=0)
+    card_order = models.IntegerField(default=0)
+    board_order = models.IntegerField(default=0)
 
     class Meta:
         db_table = "categories"
-        ordering = ["order", "name"]
+        ordering = ["card_order", "name"]
         constraints = [
             models.UniqueConstraint(Lower("name"), name="category_name_ci_unique")
         ]

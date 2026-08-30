@@ -55,6 +55,9 @@ export default function Header({ openAccountModal }: HeaderProps) {
         <button onClick={() => goTo('/feedback')} className={`${itemClass} text-primary`}>
           Feedback
         </button>
+        <button onClick={() => goTo('/board')} className={`${itemClass} text-primary`}>
+          Board
+        </button>
       </nav>
     </>
   );

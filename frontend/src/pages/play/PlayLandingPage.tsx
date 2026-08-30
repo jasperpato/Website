@@ -29,7 +29,7 @@ export default function PlayLandingPage({ categories, seconds, setSeconds, setCa
 
             <div className="flex flex-col gap-4 max-sm:portrait:flex-1 max-sm:portrait:w-full"> {/* max-sm:portrait:justify-evenly"> */}
                 {categories
-                    .sort((a: Category, b: Category) => a.order - b.order)
+                    .sort((a: Category, b: Category) => a.card_order - b.card_order)
                     .map(c => (
                         <BigButton
                             key={c.id}
