@@ -207,7 +207,9 @@ function App() {
 
     const inputClass = "border border-border rounded px-3 py-2 w-full outline-none focus:border-secondary"
 
-    const openAccountModal = (msg: string = "") => {
+    const defaultModalMessage = "Enter your email to sign in or register!"
+
+    const openAccountModal = (msg: string = defaultModalMessage) => {
         setModalMessage(msg)
         setModalOpen(true)
         setModalHistory([])
@@ -266,7 +268,7 @@ function App() {
                     rightButton = {{ label: "Submit", onClick: onSubmitEmail, enabled: emailValid(emailText) }}
                     onClose = {closeModal}
                     bannerProps={bannerProps}
-                    modalMessage={modalMessage}
+                    modalMessage={modalMessage ?? defaultModalMessage}
                 >
                     <input type="email" placeholder="Email" value={emailText} onChange={e => setEmailText(e.target.value)} className={inputClass} />
                 </Modal>

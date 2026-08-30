@@ -66,7 +66,7 @@ export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openA
           className={`${inputClass} ${!loggedIn ? 'opacity-40' : ''}`}
         />
         <button
-          onClick={loggedIn ? handleAdd : () => openAccountModal("Sign in to add words!")}
+          onClick={loggedIn ? handleAdd : () => openAccountModal("Sign in or register to add words!")}
           disabled={!canAdd}
           className={`px-4 py-2 rounded bg-primary text-white w-full transition-opacity ${canAdd ? 'cursor-pointer' : 'opacity-40'}`}
         >
