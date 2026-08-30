@@ -27,7 +27,7 @@ export default function Header({ openAccountModal }: HeaderProps) {
           </button>
           {/* <Link to="/" className="font-bold text-xl text-primary no-underline">JP</Link> */}
         </div>
-        <button onClick={openAccountModal} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
+        <button onClick={() => openAccountModal()} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
           <UserCircle size={28} />
         </button>
       </header>
@@ -54,6 +54,9 @@ export default function Header({ openAccountModal }: HeaderProps) {
         </button>
         <button onClick={() => goTo('/add-words')} className={`${itemClass} text-primary`}>
           Add Words
+        </button>
+        <button onClick={() => goTo('/feedback')} className={`${itemClass} text-primary`}>
+          Feedback
         </button>
       </nav>
     </>

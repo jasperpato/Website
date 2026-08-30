@@ -5,6 +5,7 @@ import Modal from './components/Modal'
 import LinkText from './components/LinkText'
 import LandingPage from './pages/landing/LandingPage'
 import AddWordsPage from './pages/addWords/AddWordsPage'
+import FeedbackPage from './pages/feedback/FeedbackPage'
 import PlayPage from './pages/play/PlayPage'
 import { BannerProps, BannerType } from './components/Banner'
 import { register, submitCode, login, logout, getMe, getWords, getCategories, getFeedback, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, Feedback, updateUser, loginWithCode } from './api'
@@ -235,6 +236,15 @@ function App() {
                 }
             />
             <Route path="/play" element={<PlayPage categories={categories} words={words} />} />
+            <Route
+                path="/feedback"
+                element={
+                    <FeedbackPage
+                        feedback={feedback}
+                        onFeedbackAdded={fetchObjects}
+                    />
+                }
+            />
         </Routes>
 
         {modalOpen && (
