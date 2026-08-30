@@ -28,7 +28,7 @@ interface Notch {
 }
 
 const SPACES_PER_CATEGORY = 6
-const ALL_PLAY_COUNT = 6
+// const ALL_PLAY_COUNT = 6
 const MIN_TILE_SIZE = 32
 const CORNER_RADIUS_RATIO = 0.35
 const CURVE_EXTENSION_RATIO = 0.25
@@ -36,6 +36,8 @@ const CURVE_EXTENSION_RATIO = 0.25
 // plus a half-tile gap, which the 0.25 extension on each side then exactly closes
 const ROW_SPACING_RATIO = 1.5
 const NOTCH_SIZE_RATIO = 0.5
+// space reserved around the whole grid so the simulated 1px tile border isn't clipped by the svg edge
+const BORDER_MARGIN = 2
 // every tile is this many times wider than it is tall (a fixed unit height, defined by `size`)
 const WIDTH_RATIO = 1.25
 
@@ -44,24 +46,14 @@ const WIDTH_RATIO = 1.25
 function buildSpaces(categories: Category[]): BoardSpace[] {
     if (categories.length === 0) return []
 
-    const categorySpaces: BoardSpace[] = []
-    for (let round = 0; round < SPACES_PER_CATEGORY; round++) {
-        categories.forEach(category => categorySpaces.push({ category }))
-    }
-
-    const gap = categorySpaces.length / ALL_PLAY_COUNT
     const spaces: BoardSpace[] = []
-    let nextAllPlayAt = gap
-    let allPlayInserted = 0
 
-    categorySpaces.forEach((space, i) => {
-        spaces.push(space)
-        if (allPlayInserted < ALL_PLAY_COUNT && i + 1 >= nextAllPlayAt) {
-            spaces.push({})
-            allPlayInserted++
-            nextAllPlayAt += gap
-        }
-    })
+    for (let round = 0; round < SPACES_PER_CATEGORY; round++) {
+        categories.forEach((category: Category, i: number) => {
+            spaces.push({ category })
+            if (i < categories.length - 1 && categories[i + 1].board_order > category.board_order + 1) spaces.push({})
+        })
+    }
 
     return spaces
 }
@@ -204,30 +196,33 @@ function roundedCornerPath(x: number, y: number, width: number, height: number, 
     ].filter(Boolean).join(' ')
 }
 
-interface TileProps { 
+interface TileProps {
     x: number,
     y: number,
-    size: number, 
+    size: number,
     height: number,
     radius: number,
     color: string,
     corners: RoundedCorner[],
-    stroke: string,
-    strokeWidth: number
 }
 
-function Tile({ x, y, size, height, radius, color, corners, stroke, strokeWidth }: TileProps) {
-    return <path
-        d={roundedCornerPath(x, y, size, height, radius, corners)}
-        fill={color}
-        // stroke={stroke}
-        // strokeWidth={strokeWidth}
-    />
+// Simulates a 1px outline by drawing the same shape 1px larger (in every direction,
+// including the corner radius) behind the tile in var(--text) - the fill tile covers
+// all of it except a 1px rim, which reads as a border that follows the rounded corners.
+function Tile({ x, y, size, height, radius, color, corners }: TileProps) {
+    return (
+        <>
+            <path d={roundedCornerPath(x - 1, y - 1, size + 2, height + 2, radius + 1, corners)} fill="var(--text)" />
+            <path d={roundedCornerPath(x, y, size, height, radius, corners)} fill={color} />
+        </>
+    )
 }
 
 export default function BoardPage({ categories }: BoardPageProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [dimensions, setDimensions] = useState({ width: 800, height: 500 })
+
+    categories.sort((a: Category, b: Category) => a.board_order - b.board_order)
 
     useEffect(() => {
         const el = containerRef.current
@@ -243,38 +238,60 @@ export default function BoardPage({ categories }: BoardPageProps) {
     }, [])
 
     const spaces = buildSpaces(categories)
-    const { tiles, notches } = layoutTiles(spaces, dimensions.width, dimensions.height)
+    // reserve room for the 1px simulated border, which draws slightly outside every tile's own
+    // bounds - without this, tiles flush against the svg's edge get their border clipped
+    const contentWidth = Math.max(0, dimensions.width - 2 * BORDER_MARGIN)
+    const contentHeight = Math.max(0, dimensions.height - 2 * BORDER_MARGIN)
+    const { tiles, notches } = layoutTiles(spaces, contentWidth, contentHeight)
 
     return (
-        <main className="max-w-xl mx-auto w-full flex flex-col items-center gap-4 p-4 h-[calc(100vh-3.75rem)]">
-            <h2>Board</h2>
+        <main className="max-w-xl mx-auto w-full flex flex-col items-center gap-4 px-4 h-[calc(100vh-3.75rem)]">
+            
+            <p className="pt-4">Coming soon!</p>
+
             <div ref={containerRef} className="w-full flex-1 min-h-0">
                 <svg viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full">
-                    {tiles.map((tile, i) => (
-                        <Tile
-                            key={i}
-                            x={tile.x}
-                            y={tile.y}
-                            size={tile.width}
-                            height={tile.height}
-                            radius={tile.size * CORNER_RADIUS_RATIO}
-                            color={tile.color}
-                            corners={tile.corners}
-                            stroke="var(--text)"
-                            strokeWidth={2}
-                        />
-                    ))}
-                    {notches.map((notch, i) => (
-                        <rect
-                            key={i}
-                            x={notch.x}
-                            y={notch.y}
-                            width={notch.size}
-                            height={notch.size}
-                            rx={notch.size * CORNER_RADIUS_RATIO}
-                            fill="var(--bg)"
-                        />
-                    ))}
+                    <g transform={`translate(${BORDER_MARGIN}, ${BORDER_MARGIN})`}>
+                        {tiles.map((tile, i) => (
+                            <Tile
+                                key={i}
+                                x={tile.x}
+                                y={tile.y}
+                                size={tile.width}
+                                height={tile.height}
+                                radius={tile.size * CORNER_RADIUS_RATIO}
+                                color={tile.color}
+                                corners={tile.corners}
+                            />
+                        ))}
+                        {notches.map((notch, i) => (
+                            <>
+                                <rect
+                                    key={i}
+                                    x={notch.x}
+                                    y={notch.y}
+                                    width={notch.size}
+                                    height={notch.size}
+                                    rx={notch.size * CORNER_RADIUS_RATIO}
+                                    fill="var(--text)"
+                                    // stroke="var(--text)"
+                                    // strokeWidth={1}
+                                />
+
+                                <rect
+                                    key={i}
+                                    x={i % 2 ? notch.x + 1 : notch.x - 1 - notch.size}
+                                    y={notch.y + 1}
+                                    width={notch.size * 2}
+                                    height={notch.size - 2}
+                                    rx={notch.size * CORNER_RADIUS_RATIO - 1}
+                                    fill="var(--bg)"
+                                    // stroke="var(--text)"
+                                    // strokeWidth={1}
+                                />
+                            </>
+                        ))}
+                    </g>
                 </svg>
             </div>
         </main>

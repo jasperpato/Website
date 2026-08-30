@@ -49,14 +49,14 @@ export default function Header({ openAccountModal }: HeaderProps) {
         <button onClick={() => goTo('/play')} className={`${itemClass} text-secondary`}>
           Play!
         </button>
+        <button onClick={() => goTo('/board')} className={`${itemClass} text-primary`}>
+          Board
+        </button>
         <button onClick={() => goTo('/add-words')} className={`${itemClass} text-primary`}>
           Add Words
         </button>
         <button onClick={() => goTo('/feedback')} className={`${itemClass} text-primary`}>
           Feedback
-        </button>
-        <button onClick={() => goTo('/board')} className={`${itemClass} text-primary`}>
-          Board
         </button>
       </nav>
     </>
