@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
-import { ArrowLeft } from "lucide-react"
-import { Category, Word } from "../../api"
+import { ArrowLeft, FlagIcon } from "lucide-react"
+import { Category, reportWord, Word } from "../../api"
 import WordList from "./WordList"
 import Button from "../../components/Button"
+import IconButton, { IconSize } from "../../components/IconButton"
 
 interface TurnPageProps {
     words: Word[],
@@ -45,12 +46,17 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
         return () => clearInterval(id)
     }, [remaining])
 
-    return <>
-        <div className="relative flex items-center justify-center px-6 h-15">
-            <button onClick={() => setTurn(false)} className="absolute left-6 cursor-pointer bg-transparent border-none flex items-center text-muted hover:text-primary" style={category ? { color: category.color } : undefined}>
-                <ArrowLeft size={28} />
-            </button>
+    const onReportWord = async () => {
+        currentWord && await reportWord(currentWord.id)
+    }
+
+    return <div className="max-w-xl mx-auto w-full">
+        <div className="flex flex-row items-center justify-between px-6 h-15 w-full">
+            <IconButton icon={ArrowLeft} color={category?.color ?? "var(--color-muted)"} size={IconSize.LARGE} onClick={() => setTurn(false)} />
+
             <p className="font-bold text-2xl" style={category ? { color: category.color } : undefined}>{category?.name}</p>
+
+            <IconButton icon={FlagIcon} color="var(--color-muted)" size={IconSize.LARGE} onClick={onReportWord} />
         </div>
         <p className="font-bold text-xl text-center text-muted">00:{remaining < 10 ? "0" : ""}{remaining}</p>
 
@@ -84,5 +90,5 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
             <WordList title="Skipped" words={skippedWords} onWordClick={moveToGot} />
             <WordList title="Got" words={gotWords} onWordClick={moveToSkipped} color={category?.color} />
         </div>
-    </>
+    </div>
 }

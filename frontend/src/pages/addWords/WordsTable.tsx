@@ -1,47 +1,10 @@
 import { useMemo, useState } from 'react';
-import { CheckCircle, HelpCircle, XCircle } from 'lucide-react';
-import { updateWord, Word } from '../../api';
+import { Word } from '../../api';
 import Category from '../../components/CategoryBox';
 import PanelBox from '../../components/PanelBox';
 import Table from '../../components/Table';
 import TextInput from '../../components/TextInput';
 
-// interface ApprovedCellProps {
-//   value: boolean | null;
-// }
-
-// function ApprovedCell({ value }: ApprovedCellProps) {
-//   if (value === true) return <span className="text-600 text-sm">Approved</span>;
-//   if (value === false) return <span className="text-500 text-sm">Denied</span>;
-//   return <span className="text-sm">Pending</span>;
-// }
-
-// interface ApprovedActionProps {
-//   word: Word;
-//   onRefresh: () => void
-// }
-
-// function ApproveActions({ word, onRefresh }: ApprovedActionProps) {
-//   const handle = async (approved: boolean | null) => {
-//     await updateWord(word.id, { approved });
-//     onRefresh();
-//   };
-
-//   return (
-//     <div className="flex items-center gap-2">
-//       <ApprovedCell value={word.approved} />
-//       <button onClick={() => handle(false)} className="cursor-pointer text-error hover:opacity-70">
-//         <XCircle size={18} />
-//       </button>
-//       <button onClick={() => handle(null)} className="cursor-pointer text-warning hover:opacity-70">
-//         <HelpCircle size={18} />
-//       </button>
-//       <button onClick={() => handle(true)} className="cursor-pointer text-success hover:opacity-70">
-//         <CheckCircle size={18} />
-//       </button>
-//     </div>
-//   );
-// }
 
 interface WordsTableProps {
   words: Word[],

@@ -233,16 +233,16 @@ export async function getCategories(): Promise<Category[]> {
     return data
 }
 
-export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'>>): Promise<Word> {
-    const token = await getValidToken()
+export async function reportWord(id: number): Promise<Word> {
+    // const token = await getValidToken()
 
     const res = await fetch(`${BASE}/api/words/${id}/`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            // 'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ reported: true }),
     })
 
     const result = await res.json()

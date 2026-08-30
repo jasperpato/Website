@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu as MenuIcon, UserCircle } from 'lucide-react';
 import { useState } from 'react';
 import BigButton from './BigButton';
+import IconButton, { IconSize } from './IconButton';
 
 interface HeaderProps {
   openAccountModal: () => void
@@ -22,14 +23,10 @@ export default function Header({ openAccountModal }: HeaderProps) {
     <>
       <header className="flex justify-between items-center px-6 h-15 border-b border-border">
         <div className="flex items-center gap-4">
-          <button onClick={() => setOpen(true)} className="cursor-pointer bg-transparent border-none flex items-center text-secondary">
-            <MenuIcon size={28} />
-          </button>
+          <IconButton icon={MenuIcon} color="var(--color-secondary)" size={IconSize.LARGE} onClick={() => setOpen(true)} />
           {/* <Link to="/" className="font-bold text-xl text-primary no-underline">JP</Link> */}
         </div>
-        <button onClick={() => openAccountModal()} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
-          <UserCircle size={28} />
-        </button>
+        <IconButton icon={UserCircle} color="var(--color-primary)" size={IconSize.LARGE} onClick={() => openAccountModal()} />
       </header>
 
       <div
