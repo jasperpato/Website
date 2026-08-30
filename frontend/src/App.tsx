@@ -7,7 +7,7 @@ import LandingPage from './pages/landing/LandingPage'
 import AddWordsPage from './pages/addWords/AddWordsPage'
 import PlayPage from './pages/play/PlayPage'
 import { BannerProps, BannerType } from './components/Banner'
-import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, updateUser, loginWithCode } from './api'
+import { register, submitCode, login, logout, getMe, getWords, getCategories, getFeedback, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, Feedback, updateUser, loginWithCode } from './api'
 
 
 const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
@@ -88,6 +88,7 @@ function App() {
     const [user, setUser] = useState<User | null>(null)
     const [words, setWords] = useState<Word[]>([])
     const [categories, setCategories] = useState<Category[]>([])
+    const [feedback, setFeedback] = useState<Feedback[]>([])
 
     const fetchMe = useCallback(() => getMe().then((user) => {
         setUser(user)
@@ -96,12 +97,14 @@ function App() {
 
     const _fetchWords = useCallback(() => getWords().then(setWords).catch(() => {}), [])
     const _fetchCategories = useCallback(() => getCategories().then(setCategories).catch(() => {}), [])
+    const _fetchFeedback = useCallback(() => getFeedback().then(setFeedback).catch(() => {}), [])
 
     const fetchObjects = useCallback(() => {
         fetchMe()
         _fetchWords()
         _fetchCategories()
-    }, [fetchMe, _fetchWords, _fetchCategories])
+        _fetchFeedback()
+    }, [fetchMe, _fetchWords, _fetchCategories, _fetchFeedback])
 
     const loggedIn = user != null
 

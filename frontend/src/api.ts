@@ -21,6 +21,15 @@ export interface Word {
     approved: boolean | null
 }
 
+export interface Feedback {
+    id: number
+    name: string
+    message: string
+    user: number | null
+    public: boolean
+    submitted_at: string
+}
+
 export class ApiError extends Error {
     status?: number
     message: string
@@ -240,6 +249,36 @@ export async function updateWord(id: number, data: Partial<Pick<Word, 'approved'
     check_error(res, result)
 
     return result
+}
+
+export async function getFeedback(): Promise<Feedback[]> {
+    const res = await fetch(`${BASE}/api/feedback/`)
+
+    const data = await res.json()
+    if (!res.ok) throw new ApiError('Failed to fetch feedback')
+
+    return data
+}
+
+export async function postFeedback(name: string, message: string, isPublic: boolean = false): Promise<Feedback> {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+
+    if (getStoredEmail()) {
+        try {
+            headers['Authorization'] = `Bearer ${await getValidToken()}`
+        } catch { }
+    }
+
+    const res = await fetch(`${BASE}/api/feedback/`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ name, message, public: isPublic }),
+    })
+
+    const data = await res.json()
+    check_error(res, data)
+
+    return data
 }
 
 export async function addWord(word: string, categoryId: number | null = null): Promise<Word> {

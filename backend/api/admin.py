@@ -5,7 +5,7 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.utils import timezone
 
-from .models import Category, Word
+from .models import Category, Feedback, Word
 
 
 @admin.action(description="Approve selected words")
@@ -54,5 +54,14 @@ class CategoryAdmin(admin.ModelAdmin):
         return obj._word_count
 
 
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ["name", "message", "user", "public", "addressed", "submitted_at"]
+    list_filter = ["public", "addressed"]
+    list_editable = ["public", "addressed"]
+    search_fields = ["name", "message", "user__email"]
+    date_hierarchy = "submitted_at"
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Word, WordAdmin)
+admin.site.register(Feedback, FeedbackAdmin)

@@ -1,7 +1,7 @@
 from django.db.models.functions import Lower
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Category, Word
+from .models import Category, Feedback, Word
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -114,3 +114,12 @@ class WordSerializer(serializers.ModelSerializer):
         if exists:
             raise serializers.ValidationError("This word already exists.")
         return value
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Feedback
+        fields = ["id", "name", "message", "user", "public", "submitted_at"]
+        read_only_fields = ["submitted_at"]

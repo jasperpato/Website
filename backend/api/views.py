@@ -5,8 +5,8 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Category, Word
-from .serializers import CategorySerializer, WordSerializer
+from .models import Category, Feedback, Word
+from .serializers import CategorySerializer, FeedbackSerializer, WordSerializer
 
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -105,3 +105,20 @@ def update_word(request, word_id):
 
     serializer.save()
     return Response(serializer.data)
+
+
+@api_view(["GET", "POST"])
+@permission_classes([AllowAny])
+def feedback(request: Request) -> Response:
+    if request.method == "GET":
+        serializer = FeedbackSerializer(Feedback.objects.filter(public=True, addressed=False), many=True)
+        return Response(serializer.data)
+
+    serializer = FeedbackSerializer(data=request.data)
+
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user if request.user.is_authenticated else None
+    serializer.save(user=user)
+    return Response(serializer.data, status=status.HTTP_201_CREATED)

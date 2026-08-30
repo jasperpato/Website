@@ -39,3 +39,20 @@ class Word(models.Model):
             models.UniqueConstraint(Lower("word"), name="word_word_ci_unique")
         ]
 
+
+class Feedback(models.Model):
+    name = models.CharField(max_length=255)
+    message = models.TextField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="feedback")
+    public = models.BooleanField(default=False)
+    addressed = models.BooleanField(default=False)
+
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "feedback"
+        ordering = ["-submitted_at"]
+
+    def __str__(self):
+        return f"{self.name}: {self.message[:50]}"
+
