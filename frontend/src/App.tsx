@@ -4,7 +4,7 @@ import Header from './components/Header'
 import Modal from './components/Modal'
 import LinkText from './components/LinkText'
 import LandingPage from './pages/landing/LandingPage'
-import ContributePage from './pages/contribute/ContributePage'
+import AddWordsPage from './pages/addWords/AddWordsPage'
 import PlayPage from './pages/play/PlayPage'
 import { BannerProps, BannerType } from './components/Banner'
 import { register, submitCode, login, logout, getMe, getWords, getCategories, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, updateUser, loginWithCode } from './api'
@@ -68,6 +68,8 @@ function App() {
     const [passwordText, setPasswordText] = useState('')
     const [confirmPasswordText, setConfirmPasswordText] = useState('')
     const [codeText, setCodeText] = useState('')
+
+    const [modalMessage, setModalMessage] = useState("")
 
     const [bannerProps, setBannerProps] = useState<BannerProps | undefined>(undefined)
 
@@ -133,6 +135,7 @@ function App() {
         setConfirmPasswordText('')
         setCodeText('')
         setBannerProps(undefined)
+        setModalMessage("")
     } 
 
     const onLogout = () => {
@@ -200,27 +203,31 @@ function App() {
 
     const inputClass = "border border-border rounded px-3 py-2 w-full outline-none focus:border-secondary"
 
+    const openAccountModal = (msg: string = "") => {
+        setModalMessage(msg)
+        setModalOpen(true)
+        setModalHistory([])
+        setModalState(loggedIn ? ModalState.VIEW_ACCOUNT : ModalState.SUBMIT_EMAIL)
+    }
+
     return (<>
         <Header
-            onAccountClick={() => {
-                setModalOpen(true)
-                setModalHistory([])
-                setModalState(loggedIn ? ModalState.VIEW_ACCOUNT : ModalState.SUBMIT_EMAIL)
-            }}
+            openAccountModal={openAccountModal}
         />
 
         <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route
-                path="/contribute"
+                path="/add-words"
                 element={
-                    <ContributePage
+                    <AddWordsPage
                         words={words}
                         categories={categories}
                         user={user}
                         loggedIn={loggedIn}
                         onWordAdded={fetchObjects}
                         onRefresh={fetchObjects}
+                        openAccountModal={openAccountModal}
                     />
                 }
             />
@@ -246,6 +253,7 @@ function App() {
                     rightButton = {{ label: "Submit", onClick: onSubmitEmail, enabled: emailValid(emailText) }}
                     onClose = {closeModal}
                     bannerProps={bannerProps}
+                    modalMessage={modalMessage}
                 >
                     <input type="email" placeholder="Email" value={emailText} onChange={e => setEmailText(e.target.value)} className={inputClass} />
                 </Modal>

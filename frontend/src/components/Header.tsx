@@ -4,10 +4,10 @@ import { useState } from 'react';
 import BigButton from './BigButton';
 
 interface HeaderProps {
-  onAccountClick: () => void
+  openAccountModal: () => void
 }
 
-export default function Header({ onAccountClick }: HeaderProps) {
+export default function Header({ openAccountModal }: HeaderProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -27,7 +27,7 @@ export default function Header({ onAccountClick }: HeaderProps) {
           </button>
           {/* <Link to="/" className="font-bold text-xl text-primary no-underline">JP</Link> */}
         </div>
-        <button onClick={onAccountClick} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
+        <button onClick={openAccountModal} className="cursor-pointer bg-transparent border-none flex items-center text-primary">
           <UserCircle size={28} />
         </button>
       </header>
@@ -39,14 +39,21 @@ export default function Header({ onAccountClick }: HeaderProps) {
       <nav
         className={`fixed inset-y-0 left-0 z-50 w-64 bg-[Canvas] shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="mx-4 my-2 mt-4">
+        {/* <div className="mx-4 my-2 mt-4">
           <BigButton text="Play!" onClick={() => goTo('/play')} color="var(--color-secondary)" fullWidth small />
-        </div>
+        </div> */}
         {/* <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
           Home
         </button> */}
-        <button onClick={() => goTo('/contribute')} className={`${itemClass} text-primary`}>
-          Contribute
+        <div className="gap-4 flex flex-row mx-4 py-4 border-b border-primary">
+          <img src="/favicon.svg" alt="icon" className="h-6 w-6"/>
+          <p className="font-semibold">jasperpato</p>
+        </div>
+        <button onClick={() => goTo('/play')} className={`${itemClass} text-secondary`}>
+          Play!
+        </button>
+        <button onClick={() => goTo('/add-words')} className={`${itemClass} text-primary`}>
+          Add Words
         </button>
       </nav>
     </>

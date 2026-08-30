@@ -7,7 +7,7 @@ export default function LandingPage() {
     return (
         <main className="flex flex-col lg:flex-row items-center justify-center gap-6 p-4 h-[calc(100vh-3.75rem)]">
             <BigButton text="Play!" onClick={() => navigate('/play')} color="var(--color-secondary)" />
-            <BigButton text="Contribute" onClick={() => navigate('/contribute')} color="var(--color-primary)" />
+            <BigButton text="Add Words" onClick={() => navigate('/add-words')} color="var(--color-primary)" />
         </main>
     )
 }

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle, HelpCircle, XCircle } from 'lucide-react';
 import { updateWord, Word } from '../../api';
-import Category from '../../components/Category';
+import Category from '../../components/CategoryBox';
 import PanelBox from '../../components/PanelBox';
 import Table from '../../components/Table';
 import TextInput from '../../components/TextInput';

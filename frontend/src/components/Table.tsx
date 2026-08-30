@@ -1,8 +1,15 @@
-import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function Table({ columns, data, pageSize = 10, resetPageKey }) {
+interface TableProps<T> {
+  columns: ColumnDef<T, any>[],
+  data: T[],
+  pageSize?: number,
+  resetPageKey?: string,
+}
+
+export default function Table<T>({ columns, data, pageSize = 10, resetPageKey }: TableProps<T>) {
   const table = useReactTable({
     data,
     columns,

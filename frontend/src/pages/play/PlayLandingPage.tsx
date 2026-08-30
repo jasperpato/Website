@@ -20,11 +20,10 @@ export default function PlayLandingPage({ categories, seconds, setSeconds, setCa
 
     return <>
         <main className="flex flex-col items-center gap-6 p-8 max-sm:portrait:min-h-[calc(100vh-3.75rem)]">
-            <div className="max-sm:portrait:w-full">
+            <div className="w-48 max-sm:portrait:w-full">
                 <Dropdown
-                    value={seconds}
-                    onChange={setSeconds}
-                    options={TIME_OPTIONS.map(s => ({ value: s, label: `${s} seconds` }))}
+                    selectedId={String(seconds)}
+                    options={TIME_OPTIONS.map(s => ({ id: String(s), display: `${s} seconds`, onClick: () => setSeconds(s) }))}
                 />
             </div>
 

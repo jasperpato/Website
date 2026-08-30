@@ -1,4 +1,10 @@
-export default function Category({ category }) {
+import { Category } from "../api";
+
+interface CategoryProps {
+  category: Category
+}
+
+export default function CategoryBox({ category }: CategoryProps) {
   if (!category) return <span className="text-muted">—</span>;
   return (
     <span className="flex items-center gap-2">

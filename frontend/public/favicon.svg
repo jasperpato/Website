@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <path d="M256 16 A240 240 0 0 0 256 496 Z" fill="cornflowerblue"/>
+  <path d="M256 16 A240 240 0 0 1 256 496 Z" fill="coral"/>
+</svg>

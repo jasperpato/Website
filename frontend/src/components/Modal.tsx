@@ -20,9 +20,10 @@ interface ModalProps {
     rightButton?: ModalButton | null;
     children?: ReactNode;
     bannerProps?: BannerProps;
+    modalMessage?: string
 }
 
-export default function Modal({ title, onClose, onBack, leftButton, rightButton, children, bannerProps }: ModalProps) {
+export default function Modal({ title, onClose, onBack, leftButton, rightButton, children, bannerProps, modalMessage }: ModalProps) {
     const [submitting, setSubmitting] = useState(false);
 
     const onRightClick = async () => {
@@ -63,6 +64,10 @@ export default function Modal({ title, onClose, onBack, leftButton, rightButton,
                         </button>
                     )}
                 </div>
+
+                {modalMessage && <div className="pt-4 px-4">
+                    {modalMessage}
+                </div>}
 
                 <div className="p-4 flex-1 flex flex-col gap-3">
                     {children}
