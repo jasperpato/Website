@@ -45,7 +45,7 @@ export default function Header({ openAccountModal }: HeaderProps) {
         {/* <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
           Home
         </button> */}
-        <div className="gap-4 flex flex-row mx-4 py-4 border-b border-primary">
+        <div onClick={() => goTo("/")} className="gap-4 flex flex-row mx-4 py-4 border-b border-primary cursor-pointer">
           <img src="/favicon.svg" alt="icon" className="h-6 w-6"/>
           <p className="font-semibold">jasperpato</p>
         </div>
