@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useRef, useState } from "react"
 import { Category } from "../../api"
+import LoadingMessage from "../../components/LoadingMessage"
 
 interface BoardPageProps {
     categories: Category[]
@@ -260,54 +261,56 @@ export default function BoardPage({ categories }: BoardPageProps) {
     return (
         <main className="max-w-xl mx-auto w-full flex flex-col items-center gap-4 p-4 h-[calc(100vh-3.75rem)]">
 
-            <p className="">Coming soon!</p>
+            {categories.length > 0 ? (<>
+                <p className="">Coming soon!</p>
 
-            <div ref={containerRef} className="w-full flex-1 min-h-0">
-                <svg
-                    viewBox={viewBox}
-                    width={boardWidth}
-                    height={boardHeight}
-                    style={{ maxWidth: '100%', maxHeight: '100%' }}
-                >
-                    {tiles.map((tile, i) => (
-                        <Tile
-                            key={i}
-                            x={tile.x}
-                            y={tile.y}
-                            size={tile.width}
-                            height={tile.height}
-                            radius={tile.size * CORNER_RADIUS_RATIO}
-                            color={tile.color}
-                            corners={tile.corners}
-                        />
-                    ))}
-                    {notches.map((notch, i) => (
-                        <Fragment key={i}>
-                            <rect
-                                x={notch.x}
-                                y={notch.y}
-                                width={notch.size}
-                                height={notch.size}
-                                rx={notch.size * CORNER_RADIUS_RATIO}
-                                fill="var(--text)"
-                                // stroke="var(--text)"
-                                // strokeWidth={1}
+                <div ref={containerRef} className="w-full flex-1 min-h-0">
+                    <svg
+                        viewBox={viewBox}
+                        width={boardWidth}
+                        height={boardHeight}
+                        style={{ maxWidth: '100%', maxHeight: '100%' }}
+                    >
+                        {tiles.map((tile, i) => (
+                            <Tile
+                                key={i}
+                                x={tile.x}
+                                y={tile.y}
+                                size={tile.width}
+                                height={tile.height}
+                                radius={tile.size * CORNER_RADIUS_RATIO}
+                                color={tile.color}
+                                corners={tile.corners}
                             />
+                        ))}
+                        {notches.map((notch, i) => (
+                            <Fragment key={i}>
+                                <rect
+                                    x={notch.x}
+                                    y={notch.y}
+                                    width={notch.size}
+                                    height={notch.size}
+                                    rx={notch.size * CORNER_RADIUS_RATIO}
+                                    fill="var(--text)"
+                                    // stroke="var(--text)"
+                                    // strokeWidth={1}
+                                />
 
-                            <rect
-                                x={i % 2 ? notch.x + 1 : notch.x - 1 - notch.size}
-                                y={notch.y + 1}
-                                width={notch.size * 2}
-                                height={notch.size - 2}
-                                rx={notch.size * CORNER_RADIUS_RATIO - 1}
-                                fill="var(--bg)"
-                                // stroke="var(--text)"
-                                // strokeWidth={1}
-                            />
-                        </Fragment>
-                    ))}
-                </svg>
-            </div>
+                                <rect
+                                    x={i % 2 ? notch.x + 1 : notch.x - 1 - notch.size}
+                                    y={notch.y + 1}
+                                    width={notch.size * 2}
+                                    height={notch.size - 2}
+                                    rx={notch.size * CORNER_RADIUS_RATIO - 1}
+                                    fill="var(--bg)"
+                                    // stroke="var(--text)"
+                                    // strokeWidth={1}
+                                />
+                            </Fragment>
+                        ))}
+                    </svg>
+                </div>
+            </>) : <LoadingMessage/>}
         </main>
     )
 }
