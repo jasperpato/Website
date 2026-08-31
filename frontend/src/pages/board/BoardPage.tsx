@@ -264,7 +264,7 @@ export default function BoardPage({ categories }: BoardPageProps) {
             {categories.length > 0 ? (<>
                 <p className="">Coming soon!</p>
 
-                <div ref={containerRef} className="w-full flex-1 min-h-0">
+                <div ref={containerRef} className="w-full flex-1 min-h-0 flex flex-col justify-start items-center">
                     <svg
                         viewBox={viewBox}
                         width={boardWidth}
