@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import { Category } from "../../api"
 
 interface BoardPageProps {
@@ -238,60 +238,74 @@ export default function BoardPage({ categories }: BoardPageProps) {
     }, [])
 
     const spaces = buildSpaces(categories)
-    // reserve room for the 1px simulated border, which draws slightly outside every tile's own
-    // bounds - without this, tiles flush against the svg's edge get their border clipped
-    const contentWidth = Math.max(0, dimensions.width - 2 * BORDER_MARGIN)
-    const contentHeight = Math.max(0, dimensions.height - 2 * BORDER_MARGIN)
-    const { tiles, notches } = layoutTiles(spaces, contentWidth, contentHeight)
+    const { tiles, notches } = layoutTiles(spaces, dimensions.width, dimensions.height)
+
+    // fit the svg's viewBox (and intrinsic width/height) tightly around the drawn board, not the
+    // full container - combined with max-width/max-height below, this shrink-wraps the element to
+    // the board's actual aspect ratio instead of stretching it to fill the container with letterboxing
+    let viewBox = `0 0 ${dimensions.width} ${dimensions.height}`
+    let boardWidth = dimensions.width
+    let boardHeight = dimensions.height
+
+    if (tiles.length > 0) {
+        const minX = Math.min(...tiles.map(t => t.x))
+        const maxX = Math.max(...tiles.map(t => t.x + t.width))
+        const minY = Math.min(...tiles.map(t => t.y))
+        const maxY = Math.max(...tiles.map(t => t.y + t.height))
+        boardWidth = maxX - minX + 2 * BORDER_MARGIN
+        boardHeight = maxY - minY + 2 * BORDER_MARGIN
+        viewBox = `${minX - BORDER_MARGIN} ${minY - BORDER_MARGIN} ${boardWidth} ${boardHeight}`
+    }
 
     return (
-        <main className="max-w-xl mx-auto w-full flex flex-col items-center gap-4 px-4 h-[calc(100vh-3.75rem)]">
-            
-            <p className="pt-4">Coming soon!</p>
+        <main className="max-w-xl mx-auto w-full flex flex-col items-center gap-4 p-4 h-[calc(100vh-3.75rem)]">
+
+            <p className="">Coming soon!</p>
 
             <div ref={containerRef} className="w-full flex-1 min-h-0">
-                <svg viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} className="w-full h-full">
-                    <g transform={`translate(${BORDER_MARGIN}, ${BORDER_MARGIN})`}>
-                        {tiles.map((tile, i) => (
-                            <Tile
-                                key={i}
-                                x={tile.x}
-                                y={tile.y}
-                                size={tile.width}
-                                height={tile.height}
-                                radius={tile.size * CORNER_RADIUS_RATIO}
-                                color={tile.color}
-                                corners={tile.corners}
+                <svg
+                    viewBox={viewBox}
+                    width={boardWidth}
+                    height={boardHeight}
+                    style={{ maxWidth: '100%', maxHeight: '100%' }}
+                >
+                    {tiles.map((tile, i) => (
+                        <Tile
+                            key={i}
+                            x={tile.x}
+                            y={tile.y}
+                            size={tile.width}
+                            height={tile.height}
+                            radius={tile.size * CORNER_RADIUS_RATIO}
+                            color={tile.color}
+                            corners={tile.corners}
+                        />
+                    ))}
+                    {notches.map((notch, i) => (
+                        <Fragment key={i}>
+                            <rect
+                                x={notch.x}
+                                y={notch.y}
+                                width={notch.size}
+                                height={notch.size}
+                                rx={notch.size * CORNER_RADIUS_RATIO}
+                                fill="var(--text)"
+                                // stroke="var(--text)"
+                                // strokeWidth={1}
                             />
-                        ))}
-                        {notches.map((notch, i) => (
-                            <>
-                                <rect
-                                    key={i}
-                                    x={notch.x}
-                                    y={notch.y}
-                                    width={notch.size}
-                                    height={notch.size}
-                                    rx={notch.size * CORNER_RADIUS_RATIO}
-                                    fill="var(--text)"
-                                    // stroke="var(--text)"
-                                    // strokeWidth={1}
-                                />
 
-                                <rect
-                                    key={i}
-                                    x={i % 2 ? notch.x + 1 : notch.x - 1 - notch.size}
-                                    y={notch.y + 1}
-                                    width={notch.size * 2}
-                                    height={notch.size - 2}
-                                    rx={notch.size * CORNER_RADIUS_RATIO - 1}
-                                    fill="var(--bg)"
-                                    // stroke="var(--text)"
-                                    // strokeWidth={1}
-                                />
-                            </>
-                        ))}
-                    </g>
+                            <rect
+                                x={i % 2 ? notch.x + 1 : notch.x - 1 - notch.size}
+                                y={notch.y + 1}
+                                width={notch.size * 2}
+                                height={notch.size - 2}
+                                rx={notch.size * CORNER_RADIUS_RATIO - 1}
+                                fill="var(--bg)"
+                                // stroke="var(--text)"
+                                // strokeWidth={1}
+                            />
+                        </Fragment>
+                    ))}
                 </svg>
             </div>
         </main>
