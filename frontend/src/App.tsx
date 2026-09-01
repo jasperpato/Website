@@ -8,7 +8,7 @@ import AddWordsPage from './pages/addWords/AddWordsPage'
 import FeedbackPage from './pages/feedback/FeedbackPage'
 import BoardPage from './pages/board/BoardPage'
 import PlayPage from './pages/play/PlayPage'
-import { BannerProps, BannerType } from './components/Banner'
+import { Banner, BannerProps, BannerType } from './components/Banner'
 import { register, submitCode, login, logout, getMe, getWords, getCategories, getFeedback, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, Feedback, updateUser, loginWithCode } from './api'
 
 
@@ -38,7 +38,7 @@ function App() {
     const prevModalState = modalHistory.at(-1)
 
     const goToModal = (next: ModalState) => {
-        setBannerProps(undefined)
+        setModalBannerProps(undefined)
 
         if (next == ModalState.UPDATE_ACCOUNT) {
             fetchMe().then((user) =>
@@ -51,7 +51,7 @@ function App() {
     }
 
     const goBack = () => {
-        setBannerProps(undefined)
+        setModalBannerProps(undefined)
         setCodeText("")
         setPasswordText("")
         setConfirmPasswordText("")
@@ -63,6 +63,7 @@ function App() {
         })
     }
 
+
     // ----- modal fields -----
 
     const [emailText, setEmailText] = useState('')
@@ -73,9 +74,9 @@ function App() {
 
     const [modalMessage, setModalMessage] = useState("")
 
-    const [bannerProps, setBannerProps] = useState<BannerProps | undefined>(undefined)
+    const [modalBannerProps, setModalBannerProps] = useState<BannerProps | undefined>(undefined)
 
-    const setError = (text: string) => setBannerProps({ text, type: BannerType.ERROR } as BannerProps)
+    const setError = (text: string) => setModalBannerProps({ text, type: BannerType.ERROR } as BannerProps)
 
     const closeModal = () => {
         setModalOpen(false)
@@ -139,7 +140,7 @@ function App() {
         setPasswordText('')
         setConfirmPasswordText('')
         setCodeText('')
-        setBannerProps(undefined)
+        setModalBannerProps(undefined)
         setModalMessage("")
     } 
 
@@ -188,7 +189,7 @@ function App() {
             const user = await updateUser(usernameText, passwordText)
             setUser(user)
 
-            setBannerProps({ text: "User updated!", type: BannerType.SUCCESS, duration: 3000, key: Date.now().toString() } as BannerProps)
+            setModalBannerProps({ text: "User updated!", type: BannerType.SUCCESS, duration: 3000, key: Date.now().toString() } as BannerProps)
             setPasswordText("")
             setConfirmPasswordText("")
         } catch (err) {
@@ -217,10 +218,20 @@ function App() {
         setModalState(loggedIn ? ModalState.VIEW_ACCOUNT : ModalState.SUBMIT_EMAIL)
     }
 
+    const [globalBannerProps, setGlobalBannerProps] = useState<BannerProps | undefined>(undefined);
+
     return (<>
-        <Header
-            openAccountModal={openAccountModal}
-        />
+        <div className="relative">
+            <Header
+                openAccountModal={openAccountModal}
+            />
+
+            {globalBannerProps && (
+                <div className="absolute top-full left-0 right-0 z-40 m-2 bg-bg">
+                    <Banner {...globalBannerProps} />
+                </div>
+            )}
+        </div>
 
         <Routes>
             <Route path="/" element={<LandingPage />} />
@@ -238,7 +249,7 @@ function App() {
                     />
                 }
             />
-            <Route path="/play" element={<PlayPage categories={categories} words={words} />} />
+            <Route path="/play" element={<PlayPage categories={categories} words={words} setGlobalBannerProps={setGlobalBannerProps} />} />
             <Route path="/board" element={<BoardPage categories={categories} />} />
             <Route
                 path="/feedback"
@@ -258,7 +269,7 @@ function App() {
                     leftButton = {{ label: "Update", onClick: () => goToModal(ModalState.UPDATE_ACCOUNT), enabled: true }}
                     rightButton = {{ label: "Log out", onClick: onLogout, enabled: true }}
                     onClose = {closeModal}
-                    bannerProps={bannerProps}
+                    bannerProps={modalBannerProps}
                 >
                     <p className="text-muted"><strong>Email: </strong>{user?.email}</p>
                     <p className="text-muted"><strong>Username: </strong>{user?.username}</p>
@@ -269,7 +280,7 @@ function App() {
                     title = "Account"
                     rightButton = {{ label: "Submit", onClick: onSubmitEmail, enabled: emailValid(emailText) }}
                     onClose = {closeModal}
-                    bannerProps={bannerProps}
+                    bannerProps={modalBannerProps}
                     modalMessage={modalMessage ?? defaultModalMessage}
                 >
                     <input type="email" placeholder="Email" value={emailText} onChange={e => setEmailText(e.target.value)} className={inputClass} />
@@ -281,7 +292,7 @@ function App() {
                     rightButton = {{ label: "Sign in", onClick: onLogin, enabled: true }}
                     onClose = {closeModal}
                     onBack={goBack}
-                    bannerProps={bannerProps}
+                    bannerProps={modalBannerProps}
                 >
                     <input type="email" placeholder="Email or username" value={emailText} className={inputClass} disabled/>
                     <input type="password" placeholder="Password" value={passwordText} onChange={e => setPasswordText(e.target.value)} className={inputClass} />
@@ -300,7 +311,7 @@ function App() {
                     rightButton = {{ label: "Submit", onClick: () => onSubmitCode(modalState), enabled: codeText.length == VERIFICATION_CODE_LENGTH }}
                     onClose = {closeModal}
                     onBack={goBack}
-                    bannerProps={bannerProps}
+                    bannerProps={modalBannerProps}
                 >
                     <p>We sent an email to <strong>{emailText}</strong> with a verification code!</p>
                     <input placeholder="Verification code" value={codeText} onChange={e => setCodeText(e.target.value)} className={inputClass}/>
@@ -320,7 +331,7 @@ function App() {
                     rightButton = {{ label: "Update", onClick: onUpdateAccount, enabled: updateUserEnabled }}
                     onClose = {closeModal}
                     onBack={(prevModalState == ModalState.VIEW_ACCOUNT) ? goBack : undefined}
-                    bannerProps={bannerProps}
+                    bannerProps={modalBannerProps}
                 >
                     <p>Update your account!</p>
                     <input placeholder="Username" value={usernameText} onChange={e => setUsernameText(e.target.value)} className={inputClass}/>

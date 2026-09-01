@@ -1,5 +1,6 @@
-import { AlertCircle, LucideProps, HelpCircle, CheckCircle } from 'lucide-react';
+import { AlertCircle, LucideProps, HelpCircle, CheckCircle, CrossIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import IconButton, { IconSize } from './IconButton';
 
 
 interface BannerTypeProps {
@@ -21,10 +22,11 @@ export interface BannerProps {
   type: BannerType;
   duration?: number,
   className?: string;
-  key: any
+  key: any,
+  closeable: boolean
 };
 
-export function Banner({ text, type, duration, className, key }: BannerProps) {
+export function Banner({ text, type, duration, className, key, closeable = false }: BannerProps) {
   const [visible, setVisible] = useState(true)
   
   useEffect(() => {
@@ -36,11 +38,15 @@ export function Banner({ text, type, duration, className, key }: BannerProps) {
 
   return visible ? (
     <div
-      className={`flex items-center gap-2 border rounded px-3 py-2 ${className || ""}`}
+      className={`flex flex-row items-center justify-between border rounded px-3 py-2 ${className || ""}`}
       style={{ color, borderColor: color, backgroundColor: `color-mix(in srgb, ${color} 12%, transparent)` }}
     >
-      <type.icon size={18} className="shrink-0" />
-      <span>{text}</span>
+      <div className="flex flex-row items-center justify-start gap-2">
+        <type.icon size={18} className="shrink-0" />
+        <span>{text}</span>
+      </div>
+
+      {closeable && <IconButton color={color} icon={XIcon} size={IconSize.SMALL} onClick={() => setVisible(false)} />}
     </div>
   ) : <></>;
 }

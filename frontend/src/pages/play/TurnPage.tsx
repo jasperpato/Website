@@ -4,15 +4,17 @@ import { Category, reportWord, Word } from "../../api"
 import WordList from "./WordList"
 import Button from "../../components/Button"
 import IconButton, { IconSize } from "../../components/IconButton"
+import { BannerProps, BannerType } from "../../components/Banner"
 
 interface TurnPageProps {
     words: Word[],
     seconds: number,
     category?: Category,
-    setTurn: (b: boolean) => void
+    setTurn: (b: boolean) => void,
+    setGlobalBannerProps: (b?: BannerProps) => void
 }
 
-export default function TurnPage({ words, seconds, category, setTurn }: TurnPageProps) {
+export default function TurnPage({ words, seconds, category, setTurn, setGlobalBannerProps }: TurnPageProps) {
     const [remaining, setRemaining] = useState(seconds)
 
     const categoryWords = words.filter(w => w.category?.id === category?.id && w.approved !== false)
@@ -47,7 +49,16 @@ export default function TurnPage({ words, seconds, category, setTurn }: TurnPage
     }, [remaining])
 
     const onReportWord = async () => {
-        currentWord && await reportWord(currentWord.id)
+        if (currentWord) {
+            setGlobalBannerProps({ 
+                text: `"${currentWord.word}" has been flagged!`,
+                type: BannerType.SUCCESS,
+                duration: 3000,
+                key: Date.now().toString(),
+                closeable: true
+             } as BannerProps)
+            await reportWord(currentWord.id)
+        }
     }
 
     return <div className="max-w-xl mx-auto w-full">

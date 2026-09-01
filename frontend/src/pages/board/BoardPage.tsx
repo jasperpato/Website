@@ -2,6 +2,8 @@ import { Fragment, useEffect, useRef, useState } from "react"
 import { Category } from "../../api"
 import LoadingMessage from "../../components/LoadingMessage"
 
+const SHOW_BORDER = true
+
 interface BoardPageProps {
     categories: Category[]
 }
@@ -19,7 +21,8 @@ interface PositionedTile {
     width: number
     height: number
     corners: RoundedCorner[]
-    color: string
+    category?: Category
+    // color: string
 }
 
 interface Notch {
@@ -150,7 +153,8 @@ function layoutTiles(spaces: BoardSpace[], width: number, height: number): { til
                 width: colWidth,
                 height: tileHeight,
                 corners,
-                color: space.category?.color ?? "white",
+                category: space.category
+                // color: space.category?.color ?? "white",
             })
         })
 
@@ -165,6 +169,7 @@ function layoutTiles(spaces: BoardSpace[], width: number, height: number): { til
             const innerX = boundaryCol === cols - 1 ? tileX : tileX + colWidth
 
             const notchSize = size * NOTCH_SIZE_RATIO
+       
             notches.push({
                 x: innerX - notchSize / 2,
                 y: seamY - notchSize / 2,
@@ -205,15 +210,20 @@ interface TileProps {
     radius: number,
     color: string,
     corners: RoundedCorner[],
+    verticalBorders: boolean
 }
 
 // Simulates a 1px outline by drawing the same shape 1px larger (in every direction,
 // including the corner radius) behind the tile in var(--text) - the fill tile covers
 // all of it except a 1px rim, which reads as a border that follows the rounded corners.
-function Tile({ x, y, size, height, radius, color, corners }: TileProps) {
+function Tile({ x, y, size, height, radius, color, corners, verticalBorders }: TileProps) {
     return (
         <>
-            <path d={roundedCornerPath(x - 1, y - 1, size + 2, height + 2, radius + 1, corners)} fill="var(--text)" />
+            {SHOW_BORDER && <path d={roundedCornerPath(x - 1, y - 1, size + 2, height + 2, radius + 1, corners)} fill="var(--text)" />}
+            {/* {!SHOW_BORDER && verticalBorders && <>
+                <path d="" fill="var(--text)" />
+                <path d="" fill="var(--text)" />
+            </>} */}
             <path d={roundedCornerPath(x, y, size, height, radius, corners)} fill={color} />
         </>
     )
@@ -279,11 +289,13 @@ export default function BoardPage({ categories }: BoardPageProps) {
                                 size={tile.width}
                                 height={tile.height}
                                 radius={tile.size * CORNER_RADIUS_RATIO}
-                                color={tile.color}
+                                // color={tile.color}
+                                color={tile.category?.color ?? "white"}
                                 corners={tile.corners}
+                                verticalBorders={!tile.category}
                             />
                         ))}
-                        {notches.map((notch, i) => (
+                        {SHOW_BORDER && notches.map((notch, i) => (
                             <Fragment key={i}>
                                 <rect
                                     x={notch.x}
