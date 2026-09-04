@@ -9,6 +9,7 @@
   --color-success: limegreen;
   --color-error: coral;
   --color-warning: gold;
+  --color-highlight: mediumslateblue;
   --color-bg: var(--bg);
 }
 
