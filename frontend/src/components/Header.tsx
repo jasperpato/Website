@@ -76,10 +76,10 @@ export default function Header({ openAccountModal }: HeaderProps) {
         <NavButton link="/feedback" name="feedback" color="var(--color-primary)">
           <p className="font-semibold">Feedback</p>
         </NavButton>
-        <Divider />
+        {/* <Divider />
         <NavButton link="/resume" name="resume" color="var(--color-primary)">
           <p className="font-semibold">Resume</p>
-        </NavButton>
+        </NavButton> */}
       </nav>
     </>
   );
