@@ -12,8 +12,9 @@ interface BigButtonProps {
 
 export default function BigButton({ text, onClick, color, fullWidth, small, className, filled = false, textColor = "var(--text)" }: BigButtonProps) {
     
-    const filledColor = `color-mix(in srgb, ${color} 92%, transparent)`
-    const transparentColor = `color-mix(in srgb, ${color} 12%, transparent)`
+    // const filledColor = `color-mix(in srgb, ${color} 92%, transparent)`
+    const filledColor = color;
+    const transparentColor = `color-mix(in srgb, ${color} 12%, transparent)`;
 
     return (
         <button

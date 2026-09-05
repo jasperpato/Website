@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu as MenuIcon, UserCircle } from 'lucide-react';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import BigButton from './BigButton';
 import IconButton, { IconSize } from './IconButton';
 
@@ -12,11 +12,34 @@ export default function Header({ openAccountModal }: HeaderProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-  const itemClass = "w-full text-left font-semibold px-6 py-4 cursor-pointer bg-transparent border-none hover:bg-gray-50"
-
   const goTo = (path: string) => {
     setOpen(false);
     navigate(path);
+  }
+
+  function NavButton({ color, link, highlight = true, children }: { color: string, children: ReactNode, link: string, name: string, highlight?: boolean }) {
+    const [hovered, setHovered] = useState(false);
+
+    return <>
+      <div
+        onClick={() => goTo(link)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          color,
+          backgroundColor: highlight && hovered ? `color-mix(in srgb, ${color} 12%, transparent)` : 'transparent',
+        }}
+        className="w-full cursor-pointer transition-colors"
+      >
+        <div className="gap-4 flex flex-row mx-4 py-4">
+          {children}
+        </div>
+      </div>
+    </>
+  }
+
+  function Divider() {
+    return <hr className="mx-4 border-t border-primary" />
   }
 
   return (
@@ -34,30 +57,29 @@ export default function Header({ openAccountModal }: HeaderProps) {
         onClick={() => setOpen(false)}
       />
       <nav
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[Canvas] shadow-lg flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[Canvas] shadow-lg flex flex-col gap-1 transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        {/* <div className="mx-4 my-2 mt-4">
-          <BigButton text="Play!" onClick={() => goTo('/play')} color="var(--color-secondary)" fullWidth small />
-        </div> */}
-        {/* <button onClick={() => goTo('/')} className={`${itemClass} text-primary`}>
-          Home
-        </button> */}
-        <div onClick={() => goTo("/")} className="gap-4 flex flex-row mx-4 py-4 border-b border-primary cursor-pointer">
+        <NavButton link="/" name="home" color="var(--color-primary)" highlight={false}>
           <img src="/favicon.svg" alt="icon" className="h-6 w-6"/>
           <p className="font-semibold">jasperpato</p>
-        </div>
-        <button onClick={() => goTo('/play')} className={`${itemClass} text-secondary`}>
-          Play!
-        </button>
-        <button onClick={() => goTo('/board')} className={`${itemClass} text-primary`}>
-          Board
-        </button>
-        <button onClick={() => goTo('/add-words')} className={`${itemClass} text-primary`}>
-          Add Words
-        </button>
-        <button onClick={() => goTo('/feedback')} className={`${itemClass} text-primary`}>
-          Feedback
-        </button>
+        </NavButton>
+        <Divider />
+        <NavButton link="/play" name="play" color="var(--color-secondary)">
+          <p className="font-semibold">Play!</p>
+        </NavButton>
+        <NavButton link="/board" name="board" color="var(--color-primary)">
+          <p className="font-semibold">Board</p>
+        </NavButton>
+        <NavButton link="/add-words" name="add-words" color="var(--color-primary)">
+          <p className="font-semibold">Add Words</p>
+        </NavButton>
+        <NavButton link="/feedback" name="feedback" color="var(--color-primary)">
+          <p className="font-semibold">Feedback</p>
+        </NavButton>
+        <Divider />
+        <NavButton link="/resume" name="resume" color="var(--color-primary)">
+          <p className="font-semibold">Resume</p>
+        </NavButton>
       </nav>
     </>
   );
