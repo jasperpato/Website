@@ -13,8 +13,8 @@ interface WordsTableProps {
 }
 
 export default function WordsTable({ words, isStaff, onRefresh }: WordsTableProps) {
-  const [sortedBy, setSortedBy] = useState('submitted_at');
-  const [ascending, setAscending] = useState(false);
+  const [sortedBy, setSortedBy] = useState('alphabetical');
+  const [ascending, setAscending] = useState(true);
   const [searchText, setSearchText] = useState("");
   const [matchedWords, setMatchedWords] = useState<Word[]>([]);
 

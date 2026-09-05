@@ -11,6 +11,12 @@
   --color-warning: gold;
   --color-highlight: mediumslateblue;
   --color-bg: var(--bg);
+
+  --color-aurora-blue: #145091;
+  --color-aurora-light-blue: #67CBDF;
+  --color-icrar-red: #ad1a27;
+  --color-uwa-blue: #27348B;
+  --color-uwa-gold: #E2B600;
 }
 
 :root {
