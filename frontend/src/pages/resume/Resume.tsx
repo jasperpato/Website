@@ -1,10 +1,33 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { Columns2, Rows2 } from "lucide-react";
 import IconButton, { IconSize } from "../../components/IconButton";
+
+const MM_TO_PX = 96 / 25.4;
+const PAGE_WIDTH_PX = 210 * MM_TO_PX;
+const PAGE_HEIGHT_PX = 297 * MM_TO_PX;
+const OUTER_PADDING_PX = 64; // matches p-8 on both sides
 
 export default function Resume() {
     // const [stacked, setStacked] = useState(false);
     const stacked = true;
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const updateScale = () => {
+            const available = el.clientWidth - OUTER_PADDING_PX;
+            setScale(Math.min(1, available / PAGE_WIDTH_PX));
+        };
+
+        updateScale();
+        const resizeObserver = new ResizeObserver(updateScale);
+        resizeObserver.observe(el);
+        return () => resizeObserver.disconnect();
+    }, []);
 
     function SubHeading({ children, className = "" }: { children: ReactNode, className?: string }) {
         return <h3 className={`text-primary font-bold text-lg ${className}`}>{children}</h3>
@@ -82,7 +105,7 @@ export default function Resume() {
     }
     
     return <>
-        <div className={`p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}>
+        <div ref={containerRef} className={`p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}>
             {/* <IconButton
                 icon={stacked ? Columns2 : Rows2}
                 color="var(--color-primary)"
@@ -92,8 +115,10 @@ export default function Resume() {
                 className="absolute top-4 left-4 z-10 bg-bg shadow"
             /> */}
 
-            <Page>
-                <h2>Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</h2>
+            <div style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
+                <div style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
+                    <Page>
+                <p className="text-2xl font-semibold">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
 
                 <Section title="About Me">
                     <P>
@@ -189,7 +214,9 @@ export default function Resume() {
                          </div>
                     </ExperienceSection>
                 </Section>
-            </Page>
+                    </Page>
+                </div>
+            </div>
         </div>
     </>
 }
