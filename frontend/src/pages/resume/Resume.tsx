@@ -7,7 +7,7 @@ export default function Resume() {
     const stacked = true;
 
     function SubHeading({ children, className = "" }: { children: ReactNode, className?: string }) {
-        return <h3 className={`text-highlight font-semibold text-lg ${className}`}>{children}</h3>
+        return <h3 className={`text-primary font-bold text-lg ${className}`}>{children}</h3>
     }
 
     function Td({ children = "", header = false, className = "", fit = false, fill = false, right = false }: { right?: boolean, children?: ReactNode, header?: boolean, className?: string, fit?: boolean, fill?: boolean }) {
@@ -19,7 +19,7 @@ export default function Resume() {
             <div className="w-full flex flex-col items-start gap-2">
                 {title && <SubHeading>{title}</SubHeading>}
 
-                <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-6 w-full">
                     {children}
                 </div>
             </div>
@@ -27,7 +27,7 @@ export default function Resume() {
     }
 
     function Table({ children, className = "" }: { children: ReactNode, className?: string }) {
-        return <table className={`[&_td:not(:last-child)]:pr-4 [&_tr:not(:last-child)_td]:pb-2 ${className}`}>
+        return <table className={`[&_td:not(:last-child)]:pr-6 [&_tr:not(:last-child)_td]:pb-2 ${className}`}>
             <tbody>{children}</tbody>
         </table>
     }
@@ -38,7 +38,7 @@ export default function Resume() {
 
     function ExperienceSection({ title, date, children = "", color, colors }: { color?: string, colors?: string[], title: string, date: string, children?: ReactNode}) {
         return <>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
                 <Table>
                     <tr>
                         <Td fill className="font-bold">
@@ -63,12 +63,22 @@ export default function Resume() {
         </>
     }
 
+    function A({ children, href }: { children: ReactNode, href: string }) {
+        return <a target="_blank" rel="noopener noreferrer" href={href} className="text-none hover:text-secondary">
+            {children}
+        </a>
+    }
+
     function Page({ children }: { children: ReactNode}) {
         return <div className="w-[210mm] h-[297mm] p-[0.8in] bg-bg">
             <div className="flex flex-col gap-6 bg-bg h-full overflow-hidden">
                 {children}
             </div>
         </div>
+    }
+
+    function List({ children, color = "black" }: { children: ReactNode, color?: string }) {
+        return <ul className="list-disc pl-4 marker:text-[var(--marker-color)]" style={{ "--marker-color": color } as React.CSSProperties}>{children}</ul>
     }
     
     return <>
@@ -84,42 +94,41 @@ export default function Resume() {
 
             <Page>
                 <h2>Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</h2>
+
+                <Section title="About Me">
+                    <P>
+                        Tennis player, full stack engineer, love physics, short story
+                    </P>
+                </Section>
                 
                 <Section title="Personal Details">
                     <Table>
                         <tr>
                             <Td header>Email</Td><Td>jasperpato@gmail.com</Td>
-                            <Td header>GitHub</Td><Td>github.com/jasperpato</Td>
+                            <Td header>GitHub</Td><Td><A href="https://github.com/jasperpato/">github.com/jasperpato</A></Td>
                         </tr>
                         <tr>
-                            <Td header>Website</Td><Td>jasperpato.com</Td>
-                            {/* <Td header>LinkedIn</Td><Td>linkedin.com/in/jasper-paterson-798b1317b</Td> */}
+                            <Td header>Website</Td><Td><A href="https://jasperpato.com/">jasperpato.com</A></Td>
+                            <Td header>LinkedIn</Td><Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><div>linkedin.com/in/jasper-paterson-798b1317b</div></A></Td>
                         </tr>
                     </Table>
                 </Section>
 
                 <Section title="Education">
                     <Table className="w-full">
-                        {/* <tr>
-                            <Td header fit>Secondary</Td>
-                            <Td fill>Newman College Churchlands</Td>
-                            <Td fit header>ATAR</Td>
-                            <Td fit>98.9</Td>
-                            <Td fit className="pl-4">2013 - 2018</Td>
-                        </tr> */}
                         <tr>
                             <Td header fit>Undergrad</Td>
                             <Td fill>UWA Bachelor of Science in Engineering Science and Computer Science</Td>
-                            {/* <Td fit header>WAM<br/>GPA</Td>
-                            <Td fit>86.0<br/>6.9</Td> */}
-                            <Td fit className="pl-4">2019 - 2021</Td>
+                            <Td fit right>WAM<br/>GPA</Td>
+                            <Td fit>86.0<br/>6.91</Td>
+                            <Td fit right>2019 - 2021</Td>
                         </tr>
                         <tr>
                             <Td header fit>Postgrad</Td>
                             <Td fill>UWA Master of Professional Engineering (Software Specialisation)</Td>
-                            {/* <Td fit header>WAM<br/>GPA</Td>
-                            <Td fit>85.9<br/>7.0</Td> */}
-                            <Td fit className="pl-4">2022 - 2024</Td>
+                            <Td fit right>WAM<br/>GPA</Td>
+                            <Td fit>85.9<br/>7.00</Td>
+                            <Td fit right>2022 - 2024</Td>
                         </tr>
                     </Table>
                 </Section>
@@ -127,53 +136,57 @@ export default function Resume() {
                 <Section title="Experience">
                     <ExperienceSection
                         // colors={["var(--color-aurora-blue)", "var(--color-aurora-light-blue)"]}
-                        color="var(--color-aurora-blue)"
+                        // color="var(--color-aurora-blue)"
                         title="Aurora Offshore Engineering"
                         date="January 2025 - Present"
                     >
-                        <P>
-                            CEED here. efficient Python programs using Pandas,
-                            NumPy and SciPy. I also created an internal web application using React.js,
-                            Django, Celery and Docker for the engineers to be able to access shared
-                            engineering tools and data. I then converted the app into a free web
-                            application deployed on Microsoft Azure at https://auroracat.app. I am now
-                            working on a desktop version of the app using Multiplatform Compose. 
-                        </P>
+                        <List color="var(--color-uwa-blue)">
+                            <li>CEED research project</li>
+                            <li>efficient Python programs using Pandas, NumPy and SciPy.</li>
+                            <li>I also created an internal web application using React.js,
+                            Django, Celery and Docker deployed on Microsoft Azure at <A href="https://auroracat.app/">auroracat.app</A></li>
+                            <li>desktop version of the app using Multiplatform Compose.</li>
+                            <li>Azure Container Apps, PostgreSQL, Functions, DNS Zones, Front Door</li>
+                        </List>
                     </ExperienceSection>
 
                     <ExperienceSection
-                        color="var(--color-icrar-red)"
+                        // color="var(--color-icrar-red)"
                         title="ICRAR Studentship"
                         date="Nov 2023 - Feb 2024"
                     >
-                        <P>
-                            Over the summer of 2023/24 I completed a paid studentship with the
-                            International Centre for Radio Astronomy Research (ICRAR) at the Curtin
-                            Institute of Radio Astronomy. I was lucky to join the Commensal Real-time
-                            ASKAP Fast Transients (CRAFT) Survey team researching fast radio bursts
-                            (FRBs) originating from distant galaxies. My tasks included researching
-                            leading theories on the progenitors of FRBs, data processing and statistical
-                            analysis of FRB burst profiles using Python and presenting findings to the
-                            ICRAR community at the student seminar.
-                        </P>
+                        <List color="var(--color-icrar-red)">
+                            <li>Joined the Commensal Real-time
+                            ASKAP Fast Transients (CRAFT) Survey team researching Fast Radio Bursts
+                            (FRBs)</li>
+                            <li>Researched leading theories on the progenitors of FRBs</li>
+                            <li>Data processing and statistical analysis of FRB burst profiles and host galaxy data</li>
+                        </List>
                     </ExperienceSection>
 
                     <ExperienceSection
-                        color="black"
+                        // color="black"
                         title="Coders for Causes"
                         date="Jun 2023 - Jul 2023"
                     />
 
                     <ExperienceSection
-                        color="var(--color-uwa-gold)"
+                        // color="var(--color-uwa-gold)"
                         title="UWA Lab Demonstrator"
                         date="Feb 2022 - Oct 2024"
                     >
-                        <Table>
-                            <tr><Td>Computational Thinking in Python</Td><Td>Graphics and Animation</Td></tr>
-                            <tr><Td>Systems Programming</Td><Td>Computer Networks</Td></tr>
-                            <tr><Td>Secure Coding</Td><Td></Td></tr>
-                        </Table>
+                        <div className="flex flex-row gap-8">
+                            <List color="var(--color-uwa-gold)">
+                                <li>Computational Thinking in Python</li>
+                                <li>Graphics and Animation</li>
+                                <li>Systems Programming</li>
+                            </List>
+                    
+                            <List color="var(--color-uwa-gold)">
+                                <li>Computer Networks</li>
+                                <li>Secure Coding</li>
+                            </List>
+                         </div>
                     </ExperienceSection>
                 </Section>
             </Page>
