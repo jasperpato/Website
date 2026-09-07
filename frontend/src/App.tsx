@@ -261,7 +261,7 @@ function App() {
                     />
                 }
             />
-            <Route path="/CV" element={<CV />} />
+            <Route path="/cv" element={<CV />} />
         </Routes>
 
         {modalOpen && (
