@@ -13,6 +13,10 @@ const OUTER_PADDING_PX = 64; // matches p-8 on both sides
 
 const iconSize = "w-[0.9em] h-[0.9em]"
 
+const dimensions = "w-[210mm] h-[297mm]"
+const margins = "pt-[0.65in] px-[0.65in]"
+
+
 export default function Resume() {
     // const [stacked, setStacked] = useState(false);
     const stacked = true;
@@ -38,7 +42,7 @@ export default function Resume() {
     }, []);
 
     function SubHeading({ children, className = "" }: { children: ReactNode, className?: string }) {
-        return <h3 className={`text-primary font-bold text-lg ${className}`}>{children}</h3>
+        return <h3 className={`text-primary font-bold text-m ${className}`}>{children}</h3>
     }
 
     function Td({ children = "", header = false, className = "", semibold = false, fit = false, fill = false, right = false }: { right?: boolean, children?: ReactNode, header?: boolean, className?: string, fit?: boolean, fill?: boolean, semibold?: boolean }) {
@@ -58,7 +62,7 @@ export default function Resume() {
     }
 
     function Table({ children, className = "", wide = false }: { children: ReactNode, className?: string, wide?: boolean }) {
-        return <table className={`${wide ? "[&_td:not(:last-child)]:pr-12" : "[&_td:not(:last-child)]:pr-6"} [&_tr:not(:last-child)_td]:pb-3 ${className}`}>
+        return <table className={`${wide ? "[&_td:not(:last-child)]:pr-16" : "[&_td:not(:last-child)]:pr-6"} [&_tr:not(:last-child)_td]:pb-3 ${className}`}>
             <tbody>{children}</tbody>
         </table>
     }
@@ -89,8 +93,18 @@ export default function Resume() {
         </>
     }
 
-    function A({ children, href }: { children: ReactNode, href: string }) {
-        return <a target="_blank" rel="noopener noreferrer" href={href} className="group inline-flex items-center gap-2 leading-none text-none hover:text-secondary">
+    function A({ children, href, color, className = "" }: { children: ReactNode, href: string, color?: string, className?: string }) {
+        const [hovered, setHovered] = useState(false);
+        
+        return <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={href}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            className={`group inline-flex items-center gap-2 leading-none text-none hover:text-secondary ${className}`}
+            style={{ color: hovered ? "var(--color-secondary)" : color }}
+        >
             {children}
         </a>
     }
@@ -109,15 +123,16 @@ export default function Resume() {
     }
 
     function Page({ children }: { children: ReactNode }) {
-        return <div className="w-[210mm] h-[297mm] p-[0.8in] bg-bg">
-            <div className="flex flex-col gap-6 bg-bg h-full overflow-hidden">
+        return <div className={`${dimensions} ${margins} bg-bg`}>
+            <div className="flex flex-col gap-4 bg-bg h-full overflow-hidden">
                 {children}
             </div>
         </div>
     }
 
     function List({ children, color = "black" }: { children: ReactNode, color?: string }) {
-        return <ul className="list-disc pl-4.5 marker:text-[var(--marker-color)]" style={{ "--marker-color": color } as React.CSSProperties}>{children}</ul>
+        const c = color
+        return <ul className="list-disc pl-4.5 space-y-1 marker:text-[var(--marker-color)]" style={{ "--marker-color": c } as React.CSSProperties}>{children}</ul>
     }
 
     return <>
@@ -125,25 +140,22 @@ export default function Resume() {
             <div style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
                 <div style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
                     <Page>
-                        <p className="text-2xl font-semibold">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
+                        <p className="text-2xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
 
-                        {/* <Section title="Personal Details"> */}
-                        <Section className="pt-2">
-                            <Table wide className="w-fit">
-                                <tr>
-                                    <Td><A href="mailto:jasperpato@gmail.com"><Mail className={iconSize}/>jasperpato@gmail.com</A></Td>
-                                    <Td><A href="https://github.com/jasperpato/"><GithubIcon className={iconSize}/>github.com/jasperpato</A></Td>
-                                </tr>
-                                <tr>
-                                    <Td><A href="https://jasperpato.com/"><Globe className={iconSize}/>jasperpato.com</A></Td>
-                                    <Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><LinkedinIcon className={`${iconSize} text-[#0077B5] group-hover:text-secondary`}/>linkedin.com/in/jasper-paterson-798b1317b</A></Td>
-                                </tr>
-                            </Table>
-                        </Section>
-
+                        <Table wide className="w-fit">
+                            <tr>
+                                <Td><A href="mailto:jasperpato@gmail.com"><Mail className={iconSize}/>jasperpato@gmail.com</A></Td>
+                                <Td><A href="https://github.com/jasperpato/"><GithubIcon className={iconSize}/>github.com/jasperpato</A></Td>
+                            </tr>
+                            <tr>
+                                <Td><A href="https://jasperpato.com/"><Globe className={iconSize}/>jasperpato.com</A></Td>
+                                <Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><LinkedinIcon className={`${iconSize} text-[#0077B5] group-hover:text-secondary`}/>linkedin.com/in/jasper-paterson-798b1317b</A></Td>
+                            </tr>
+                        </Table>
+                      
                         <Section title="About Me">
                             <P>
-                                Tennis player, full stack engineer, love physics, short story
+                                Full stack software engineer from Perth, WA. Love playing tennis and beach volleyball.
                             </P>
                         </Section>
 
@@ -164,52 +176,49 @@ export default function Resume() {
                                     <Td fit right semibold>2022 - 2024</Td>
                                 </tr>
                             </Table>
+
+                            <P>Achieved the top mark in <span className="italic">Software Testing and Quality Assurance</span> and <span className="italic">Mobile and Wireless Computing</span>.</P>
                         </Section>
 
                         <Section title="Experience">
                             <ExperienceSection
-                                // colors={["var(--color-aurora-blue)", "var(--color-aurora-light-blue)"]}
-                                // color="var(--color-aurora-blue)"
                                 icon={aoeLogo}
                                 link="https://aurora-oe.com/"
-                                title="Aurora Offshore Engineering"
+                                title="Aurora Offshore Engineering (AOE)"
                                 date="January 2025 - Present"
                             >
                                 <List color="var(--color-uwa-blue)">
-                                    <li><A href="https://ceed.wa.edu.au/">CEED</A> research project</li>
-                                    <li>efficient Python programs using Pandas, NumPy and SciPy.</li>
-                                    <li>I also created an internal web application using React.js,
-                                        Django, Celery and Docker deployed on Microsoft Azure at <A href="https://auroracat.app/">auroracat.app</A></li>
-                                    <li>Maintain internal and client-facing desktop app deployments using Kotlin Multiplatform Compose.</li>
-                                    <li>Azure Container Apps, PostgreSQL, Functions, DNS Zones, Front Door</li>
+                                    <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
+                                    <li>Built and deployed a web app for subsea engineering using React.js, Django, PostgreSQL and Celery and deployed on Azure at <A color="var(--color-aurora-blue)" href="https://auroracat.app/">auroracat.app</A>.</li>
+                                    <li>Built a desktop application for engineering analysis with cloud capabilities using Kotlin Multiplatform and Azure, used in-house and by external clients, assisted by two interns.</li>
                                 </List>
                             </ExperienceSection>
 
                             <ExperienceSection
-                                // color="var(--color-icrar-red)"
                                 icon={icrarLogo}
                                 link="https://icrar.org/"
                                 title="ICRAR Studentship"
                                 date="Nov 2023 - Feb 2024"
                             >
                                 <List color="var(--color-icrar-red)">
-                                    <li>Joined the Commensal Real-time
-                                        ASKAP Fast Transients (CRAFT) Survey team researching Fast Radio Bursts
-                                        (FRBs)</li>
-                                    <li>Researched leading theories on the progenitors of FRBs</li>
-                                    <li>Python data processing and statistical analysis of FRB burst profiles and host galaxy data</li>
+                                    <li>Joined the <A color="var(--color-icrar-red)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
+                                        ASKAP Fast Transients (CRAFT) Survey </A> team researching Fast Radio Bursts
+                                        (FRBs).</li>
+                                    
+                                    {/* https://www.cambridge.org/core/journals/publications-of-the-astronomical-society-of-australia/article/hightimeresolution-properties-of-35-fast-radio-bursts-detected-by-the-commensal-realtime-askap-fast-transients-survey/A90A664F7E466FC925D54CC74284B051 */}
+                                    {/* https://arxiv.org/search/astro-ph?searchtype=author&query=Paterson,+J */}
+                                    <li>Conducted a statistical analysis of FRB burst profiles and their host galaxy data using Python, contributing to <A color="var(--color-icrar-red)" href="https://doi.org/10.1017/pasa.2025.10103">multiple papers</A>.</li>
                                 </List>
                             </ExperienceSection>
 
                             <ExperienceSection
-                                // color="black"
                                 icon={cfcLogo}
                                 link="https://www.codersforcauses.org/"
                                 title="Coders for Causes"
                                 date="Jun 2023 - Jul 2023"
                             >
                                 <List>
-                                    <li>Volunteered for the winter project working full stack</li>
+                                    <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://stride-for-education.vercel.app/">Community Spirit Foundation</A>.</li>
                                 </List>
                             </ExperienceSection>
 
@@ -221,15 +230,15 @@ export default function Resume() {
                             >
                                 <div className="flex flex-row gap-8">
                                     <List color="var(--color-uwa-gold)">
-                                        <li>Computational Thinking in Python</li>
+                                        <li>Computer Networks</li>
                                         <li>Graphics and Animation</li>
-                                        <li>Systems Programming</li>
+                                        <li>Secure Coding</li>
                                     </List>
 
                                     <List color="var(--color-uwa-gold)">
-                                        <li>Computer Networks</li>
-                                        <li>Secure Coding</li>
-                                        <li>Three awards for excellence in teaching</li>
+                                        <li>Computational Thinking in Python</li>
+                                        <li>Systems Programming</li>
+                                        <li>Three commendations for excellence in teaching</li>
                                     </List>
                                 </div>
                             </ExperienceSection>
