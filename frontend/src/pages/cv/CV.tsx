@@ -123,8 +123,8 @@ export default function CV() {
     }
 
     function Page({ children }: { children: ReactNode }) {
-        return <div className={`${dimensions} ${margins} bg-bg`}>
-            <div className="flex flex-col gap-4 bg-bg h-full overflow-hidden">
+        return <div className={`${dimensions} ${margins} bg-white`}>
+            <div className="flex flex-col gap-4 bg-white h-full overflow-hidden">
                 {children}
             </div>
         </div>
@@ -136,7 +136,10 @@ export default function CV() {
     }
 
     return <>
-        <div ref={containerRef} className={`p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}>
+        <div
+            ref={containerRef}
+            className={`text-black p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}
+        >
             <div style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
                 <div style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
                     <Page>
