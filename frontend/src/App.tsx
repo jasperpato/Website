@@ -8,7 +8,7 @@ import AddWordsPage from './pages/addWords/AddWordsPage'
 import FeedbackPage from './pages/feedback/FeedbackPage'
 import BoardPage from './pages/board/BoardPage'
 import PlayPage from './pages/play/PlayPage'
-import Resume from './pages/resume/Resume'
+import CV from './pages/cv/CV'
 import { Banner, BannerProps, BannerType } from './components/Banner'
 import { register, submitCode, login, logout, getMe, getWords, getCategories, getFeedback, getStoredEmail, refreshAccessToken, ApiError, User, Word, Category, Feedback, updateUser, loginWithCode } from './api'
 
@@ -261,7 +261,7 @@ function App() {
                     />
                 }
             />
-            <Route path="/resume" element={<Resume />} />
+            <Route path="/CV" element={<CV />} />
         </Routes>
 
         {modalOpen && (

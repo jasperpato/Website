@@ -17,7 +17,7 @@ const dimensions = "w-[210mm] h-[297mm]"
 const margins = "pt-[0.65in] px-[0.65in]"
 
 
-export default function Resume() {
+export default function CV() {
     // const [stacked, setStacked] = useState(false);
     const stacked = true;
 
