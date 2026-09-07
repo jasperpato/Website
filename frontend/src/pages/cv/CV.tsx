@@ -188,7 +188,7 @@ export default function CV() {
                                 icon={aoeLogo}
                                 link="https://aurora-oe.com/"
                                 title="Aurora Offshore Engineering (AOE)"
-                                date="January 2025 - Present"
+                                date="March 2024 - Present"
                             >
                                 <List color="var(--color-uwa-blue)">
                                     <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
