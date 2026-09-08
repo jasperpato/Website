@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Columns2, Download, Earth, Globe, Mail, Rows2 } from "lucide-react";
+import { Columns2, Download, Earth, Globe, Mail, Printer, Rows2 } from "lucide-react";
 import IconButton, { IconSize } from "../../components/IconButton";
 import aoeLogo from "../../assets/aoe.svg";
 import icrarLogo from "../../assets/icrar.png";
@@ -137,6 +137,7 @@ export default function CV() {
 
     return <>
         <style>{`
+            @page { margin: 0.2in; }
             @media print {
                 header, nav { display: none !important; }
                 .cv-print-container {
@@ -152,24 +153,37 @@ export default function CV() {
             }
         `}</style>
 
-        <IconButton
-            onClick={() => {
-                const originalTitle = document.title
-                document.title = "Jasper_Paterson_CV"
+        <div className="print:hidden fixed top-20 right-4 z-10 flex flex-col gap-4">
+            <IconButton
+                onClick={() => {
+                    const originalTitle = document.title
+                    document.title = "Jasper_Paterson_CV"
 
-                const restoreTitle = () => {
-                    document.title = originalTitle
-                    window.removeEventListener("afterprint", restoreTitle)
-                }
-                window.addEventListener("afterprint", restoreTitle)
+                    const restoreTitle = () => {
+                        document.title = originalTitle
+                        window.removeEventListener("afterprint", restoreTitle)
+                    }
+                    window.addEventListener("afterprint", restoreTitle)
 
-                window.print()
-            }}
-            className="print:hidden fixed top-20 right-4 z-10"
-            icon={Download}
-            color="var(--bg)"
-            background="var(--color-primary)"
-        />
+                    window.print()
+                }}
+                icon={Printer}
+                color="var(--bg)"
+                background="var(--color-primary)"
+            />
+
+            <IconButton
+                onClick={() => {
+                    const a = document.createElement("a")
+                    a.href = "/Jasper_Paterson_CV.pdf"
+                    a.download = "Jasper_Paterson_CV.pdf"
+                    a.click()
+                }}
+                icon={Download}
+                color="var(--bg)"
+                background="var(--color-primary)"
+            />
+        </div>
 
         <div
             ref={containerRef}
