@@ -140,6 +140,10 @@ export default function CV() {
             @page { margin: 0.2in; }
             @media print {
                 header, nav { display: none !important; }
+                #cv-page, #cv-page * {
+                    print-color-adjust: exact !important;
+                    -webkit-print-color-adjust: exact !important;
+                }
                 .cv-print-container {
                     padding: 0 !important;
                     margin: 0 !important;
