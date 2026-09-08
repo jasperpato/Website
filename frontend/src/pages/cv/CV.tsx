@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Columns2, Earth, Globe, Mail, Rows2 } from "lucide-react";
+import { Columns2, Download, Earth, Globe, Mail, Rows2 } from "lucide-react";
 import IconButton, { IconSize } from "../../components/IconButton";
 import aoeLogo from "../../assets/aoe.svg";
 import icrarLogo from "../../assets/icrar.png";
@@ -123,7 +123,7 @@ export default function CV() {
     }
 
     function Page({ children }: { children: ReactNode }) {
-        return <div className={`${dimensions} ${margins} bg-white`}>
+        return <div id="cv-page" className={`${dimensions} ${margins} bg-white`}>
             <div className="flex flex-col gap-4 bg-white h-full overflow-hidden">
                 {children}
             </div>
@@ -136,12 +136,47 @@ export default function CV() {
     }
 
     return <>
+        <style>{`
+            @media print {
+                header, nav { display: none !important; }
+                .cv-print-container {
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    display: block !important;
+                }
+                .cv-scale-outer, .cv-scale-inner {
+                    width: auto !important;
+                    height: auto !important;
+                    transform: none !important;
+                }
+            }
+        `}</style>
+
+        <IconButton
+            onClick={() => {
+                const originalTitle = document.title
+                document.title = "Jasper_Paterson_CV"
+
+                const restoreTitle = () => {
+                    document.title = originalTitle
+                    window.removeEventListener("afterprint", restoreTitle)
+                }
+                window.addEventListener("afterprint", restoreTitle)
+
+                window.print()
+            }}
+            className="print:hidden fixed top-20 right-4 z-10"
+            icon={Download}
+            color="var(--bg)"
+            background="var(--color-primary)"
+        />
+
         <div
             ref={containerRef}
-            className={`text-black p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}
+            className={`cv-print-container text-black p-8 flex ${stacked ? "flex-col items-center" : "flex-row"} justify-center gap-8 bg-border relative`}
         >
-            <div style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
-                <div style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
+            <div className="cv-scale-outer" style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
+                <div className="cv-scale-inner" style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
                     <Page>
                         <p className="text-2xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
 
