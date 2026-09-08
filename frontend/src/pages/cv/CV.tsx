@@ -42,11 +42,11 @@ export default function CV() {
     }, []);
 
     function SubHeading({ children, className = "" }: { children: ReactNode, className?: string }) {
-        return <h3 className={`text-primary font-bold text-m ${className}`}>{children}</h3>
+        return <h3 className={`text-primary font-semibold text-lg ${className}`}>{children}</h3>
     }
 
     function Td({ children = "", header = false, className = "", semibold = false, fit = false, fill = false, right = false }: { right?: boolean, children?: ReactNode, header?: boolean, className?: string, fit?: boolean, fill?: boolean, semibold?: boolean }) {
-        return <td className={`align-top ${fit ? "w-[1%] whitespace-nowrap" : ""} ${fill ? "w-full" : ""} ${right ? "text-right" : ""} ${header ? "font-bold text-right" : ""} ${semibold ? "font-semibold" : ""} ${className}`}>{children}</td>
+        return <td className={`align-top ${fit ? "w-[1%] whitespace-nowrap" : ""} ${fill ? "w-full" : ""} ${right ? "text-right" : ""} ${header ? "font-semibold text-right" : ""} ${semibold ? "font-semibold" : ""} ${className}`}>{children}</td>
     }
 
     function Section({ title, children, className = "" }: { title?: string, children: ReactNode, className?: string }) {
@@ -93,7 +93,7 @@ export default function CV() {
         </>
     }
 
-    function A({ children, href, color, className = "" }: { children: ReactNode, href: string, color?: string, className?: string }) {
+    function A({ children, href, color, className = "", hoverColor }: { children: ReactNode, href: string, color?: string, className?: string, hoverColor?: string }) {
         const [hovered, setHovered] = useState(false);
         
         return <a
@@ -103,7 +103,7 @@ export default function CV() {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             className={`group inline-flex items-center gap-2 leading-none text-none hover:text-secondary ${className}`}
-            style={{ color: hovered ? "var(--color-secondary)" : color }}
+            style={{ color: hovered ? (hoverColor || "var(--color-secondary)") : color }}
         >
             {children}
         </a>
@@ -151,7 +151,8 @@ export default function CV() {
                                 <Td><A href="https://github.com/jasperpato/"><GithubIcon className={iconSize}/>github.com/jasperpato</A></Td>
                             </tr>
                             <tr>
-                                <Td><A href="https://jasperpato.com/"><Globe className={iconSize}/>jasperpato.com</A></Td>
+                                {/* "https://jasperpato.com/" */}
+                                <Td><A href="/"><Globe className={iconSize}/>jasperpato.com</A></Td>
                                 <Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><LinkedinIcon className={`${iconSize} text-[#0077B5] group-hover:text-secondary`}/>linkedin.com/in/jasper-paterson-798b1317b</A></Td>
                             </tr>
                         </Table>
@@ -204,13 +205,13 @@ export default function CV() {
                                 date="Nov 2023 - Feb 2024"
                             >
                                 <List color="var(--color-icrar-red)">
-                                    <li>Joined the <A color="var(--color-icrar-red)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
+                                    <li>Joined the <A color="var(--color-icrar-red)" hoverColor="var(--color-primary)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
                                         ASKAP Fast Transients (CRAFT) Survey </A> team researching Fast Radio Bursts
                                         (FRBs).</li>
                                     
                                     {/* https://www.cambridge.org/core/journals/publications-of-the-astronomical-society-of-australia/article/hightimeresolution-properties-of-35-fast-radio-bursts-detected-by-the-commensal-realtime-askap-fast-transients-survey/A90A664F7E466FC925D54CC74284B051 */}
                                     {/* https://arxiv.org/search/astro-ph?searchtype=author&query=Paterson,+J */}
-                                    <li>Conducted a statistical analysis of FRB burst profiles and their host galaxy data using Python, contributing to <A color="var(--color-icrar-red)" href="https://doi.org/10.1017/pasa.2025.10103">multiple papers</A>.</li>
+                                    <li>Conducted a statistical analysis of FRB burst profiles and their host galaxy data using Python, contributing to <A hoverColor="var(--color-primary)" color="var(--color-icrar-red)" href="https://doi.org/10.1017/pasa.2025.10103">multiple papers</A>.</li>
                                 </List>
                             </ExperienceSection>
 

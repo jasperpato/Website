@@ -75,6 +75,7 @@ export async function refreshAccessToken(): Promise<string> {
     if (!res.ok) throw new ApiError('Session expired')
     
     localStorage.setItem('access', data.access)
+    if (data.refresh) localStorage.setItem('refresh', data.refresh)
 
     return data.access
 }
@@ -132,11 +133,19 @@ export async function updateUser(username: string, password: string): Promise<Us
     return data
 }
 
+function firstFieldError(data: any): string | undefined {
+    if (!data || typeof data !== 'object') return undefined
+    const value = Object.values(data)[0]
+    if (Array.isArray(value)) return String(value[0])
+    if (typeof value === 'string') return value
+    return undefined
+}
+
 function check_error(res: Response, data?: any, errorMessage?: string) {
     if (!res.ok) {
         if (res.status === 401) throw new ApiError('Credentials are incorrect', 401)
         if (res.status === 429) throw new ApiError('Too many requests, come back later', 429)
-        throw new ApiError(errorMessage || data.error || data.message || "Error occurred", res.status)
+        throw new ApiError(errorMessage || data.error || data.message || firstFieldError(data) || "Error occurred", res.status)
     }
 }
 

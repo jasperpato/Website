@@ -123,7 +123,9 @@ function App() {
 
         refreshAccessToken()
             .then(fetchObjects)
-            .catch(() => logout())
+            .catch(() => {
+                if (getStoredEmail() === stored) logout()
+            })
     }, [])
 
     // ----- start a callback to refresh all objects on interval -----
@@ -198,11 +200,20 @@ function App() {
         }
     }
 
-    const onLoginWithCode = async () => {
+    const onLoginWithCode = async (resend: boolean = false) => {
         try {
             await loginWithCode(emailText)
             setCodeText("")
             goToModal(ModalState.LOGIN_WITH_CODE)
+
+            if (resend) {
+                setModalBannerProps({
+                    text: "Resent verification email!",
+                    type: BannerType.SUCCESS,
+                    duration: 3000,
+                    key: Date.now()
+                } as BannerProps)
+            }
         } catch (err) {
             if (err instanceof ApiError) setError(err.message)
         }
@@ -220,6 +231,17 @@ function App() {
     }
 
     const [globalBannerProps, setGlobalBannerProps] = useState<BannerProps | undefined>(undefined);
+
+    const onWordAdded = (word: string) => {
+        setGlobalBannerProps({
+            text: `"${word}" successfully submitted for review!`,
+            type: BannerType.SUCCESS,
+            duration: 3000,
+            key: Date.now()
+        } as BannerProps)
+
+        fetchObjects()
+    }
 
     return (<>
         <div className="relative">
@@ -244,9 +266,10 @@ function App() {
                         categories={categories}
                         user={user}
                         loggedIn={loggedIn}
-                        onWordAdded={fetchObjects}
+                        onWordAdded={onWordAdded}
                         onRefresh={fetchObjects}
                         openAccountModal={openAccountModal}
+                        setGlobalBanner={setGlobalBannerProps}
                     />
                 }
             />
@@ -309,7 +332,7 @@ function App() {
             (modalState == ModalState.REGISTER_WITH_CODE || modalState == ModalState.LOGIN_WITH_CODE) ? (
                 <Modal
                     title = "Verify Email"
-                    leftButton = {{ label: "Resend code", onClick: onLoginWithCode, enabled: true }}
+                    leftButton = {{ label: "Resend code", onClick: () => onLoginWithCode(true), enabled: true }}
                     rightButton = {{ label: "Submit", onClick: () => onSubmitCode(modalState), enabled: codeText.length == VERIFICATION_CODE_LENGTH }}
                     onClose = {closeModal}
                     onBack={goBack}

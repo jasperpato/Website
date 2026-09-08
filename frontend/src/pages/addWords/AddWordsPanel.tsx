@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react';
 import { addWord, ApiError, Category } from '../../api';
 import Dropdown from '../../components/Dropdown';
 import PanelBox from '../../components/PanelBox';
+import { BannerProps, BannerType } from '../../components/Banner';
 
 
 interface AddWordsPanel {
   categories: Category[],
-  onWordAdded: () => void,
+  onWordAdded: (word: string) => void,
   loggedIn: boolean,
-  openAccountModal: (msg: string) => void
+  openAccountModal: (msg: string) => void,
+  setGlobalBanner: (b: BannerProps) => void
 }
 
-export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openAccountModal }: AddWordsPanel) {
+export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openAccountModal, setGlobalBanner }: AddWordsPanel) {
   const [word, setWord] = useState('');
   const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
-  const [error, setError] = useState<string | undefined>(undefined);
+  // const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (categories.length > 0 && categoryId === undefined) setCategoryId(categories[0].id);
@@ -26,13 +28,23 @@ export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openA
 
   const handleAdd = async () => {
     if (!canAdd) return;
-    setError(undefined);
+    // setError(undefined);
+    
     try {
-      await addWord(word.trim(), categoryId);
+      const w = word.trim()
+      await addWord(w, categoryId);
       setWord('');
-      onWordAdded?.();
+      onWordAdded?.(w);
     } catch (err) {
-      if (err instanceof ApiError) setError(err.message);
+      if (err instanceof ApiError) {
+        // setError(err.message);
+        setGlobalBanner({
+          text: `Error: ${err.message}`,
+          type: BannerType.ERROR,
+          duration: 3000,
+          key: Date.now()
+        } as BannerProps)
+      }
     }
   };
 
@@ -44,7 +56,8 @@ export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openA
         <Dropdown
           selectedId={String(categoryId)}
           placeholder="No categories"
-          disabled={!loggedIn || !hasCategories}
+          // disabled={!loggedIn || !hasCategories}
+          disabled={!hasCategories}
           options={categories.map((c: Category) => ({
             id: String(c.id),
             display: (
@@ -62,8 +75,7 @@ export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openA
           onChange={e => setWord(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="Enter a word"
-          // disabled={!loggedIn}
-          className={`${inputClass} ${!loggedIn ? 'opacity-40' : ''}`}
+          className={inputClass}
         />
         <button
           onClick={loggedIn ? handleAdd : () => openAccountModal("Sign in or register to add words!")}
@@ -72,7 +84,7 @@ export default function AddWordsPanel({ categories, onWordAdded, loggedIn, openA
         >
           Add
         </button>
-        {error && <p className="text-error-500 text-sm">{error}</p>}
+        {/* {error && <p className="text-error-500 text-sm">{error}</p>} */}
       </div>
     </PanelBox>
   );
