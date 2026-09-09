@@ -6,7 +6,7 @@ import icrarLogo from "../../assets/icrar.png";
 import uwaLogo from "../../assets/uwa.png";
 import cfcLogo from "../../assets/cfc.jpeg";
 
-const PRINT = false;
+const PRINT = true;
 
 const W = 210; //  * 1.1;
 const H = 297; //  * 1.1;
@@ -129,7 +129,7 @@ export default function CV() {
     }
 
     function Page({ children }: { children: ReactNode }) {
-        return <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm`}>
+        return <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm text-justify`}>
             <div className="flex flex-col gap-4 bg-white h-full overflow-hidden">
                 {children}
             </div>
@@ -203,7 +203,7 @@ export default function CV() {
                 <div className="cv-scale-inner" style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
                     <Page>
                         <p className="text-xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
-
+                        
                         <Table wide className="w-fit">
                             <tr>
                                 <Td><A href="mailto:jasperpato@gmail.com"><Mail className={iconSize}/>jasperpato@gmail.com</A></Td>
