@@ -6,15 +6,22 @@ import icrarLogo from "../../assets/icrar.png";
 import uwaLogo from "../../assets/uwa.png";
 import cfcLogo from "../../assets/cfc.jpeg";
 
+const PRINT = true;
+
+const W = 210; //  * 1.1;
+const H = 297; //  * 1.1;
+
 const MM_TO_PX = 96 / 25.4;
-const PAGE_WIDTH_PX = 210 * MM_TO_PX;
-const PAGE_HEIGHT_PX = 297 * MM_TO_PX;
+const PAGE_WIDTH_PX = W * MM_TO_PX;
+const PAGE_HEIGHT_PX = H * MM_TO_PX;
 const OUTER_PADDING_PX = 64; // matches p-8 on both sides
 
 const iconSize = "w-[0.9em] h-[0.9em]"
 
-const dimensions = "w-[210mm] h-[297mm]"
-const margins = "pt-[0.65in] px-[0.65in]"
+// const dimensions = `w-[${W}mm] h-[${H}mm]`
+
+const dimensions = `w-[210mm] h-[297mm]`
+const margins = "p-[0.7in]"
 
 
 export default function CV() {
@@ -42,7 +49,7 @@ export default function CV() {
     }, []);
 
     function SubHeading({ children, className = "" }: { children: ReactNode, className?: string }) {
-        return <h3 className={`text-primary font-semibold text-lg ${className}`}>{children}</h3>
+        return <p className={`text-primary font-semibold text-base ${className}`}>{children}</p>
     }
 
     function Td({ children = "", header = false, className = "", semibold = false, fit = false, fill = false, right = false }: { right?: boolean, children?: ReactNode, header?: boolean, className?: string, fit?: boolean, fill?: boolean, semibold?: boolean }) {
@@ -67,26 +74,25 @@ export default function CV() {
         </table>
     }
 
-    function P({ children }: { children: ReactNode }) {
-        return <p className="w-full text-justify">{children}</p>
-    }
-
-    function ExperienceSection({ title, date, children = "", icon, link }: { icon?: string, link?: string, title: string, date: string, children?: ReactNode }) {
+    function ExperienceSection({ title, date, children = "", icon, link, subHeading }: { icon?: string, link?: string, title: string, date: string, children?: ReactNode, subHeading?: string }) {
         const i = <>{icon && <img src={icon} alt="" className={`${iconSize} object-contain shrink-0`} />}</>
 
         return <>
             <div className="flex flex-col gap-2">
-                <Table>
-                    <tr>
-                        <Td fill className="font-bold">
-                            <div className="flex items-center gap-2 leading-none">
-                                {link ? <A href={link}>{i}</A> : i}
-                                <span>{title}</span>
-                            </div>
-                        </Td>
-                        <Td fit semibold>{date}</Td>
-                    </tr>
-                </Table>
+                <div className="flex flex-col gap-1">
+                    <div className="flex flex-row justify-between items-center">
+                        <div className="flex items-center gap-2 leading-none">
+                            {link ? <A href={link}>{i}</A> : i}
+                            <span className="font-bold">{title}</span>
+                        </div>
+
+                        <div className="font-semibold">{date}</div>
+                    </div>
+
+                    {subHeading && <div className="text-muted italic pl-6">
+                        {subHeading}
+                    </div>}
+                </div>
 
                 {children}
             </div>
@@ -123,7 +129,7 @@ export default function CV() {
     }
 
     function Page({ children }: { children: ReactNode }) {
-        return <div id="cv-page" className={`${dimensions} ${margins} bg-white`}>
+        return <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm`}>
             <div className="flex flex-col gap-4 bg-white h-full overflow-hidden">
                 {children}
             </div>
@@ -132,12 +138,12 @@ export default function CV() {
 
     function List({ children, color = "black" }: { children: ReactNode, color?: string }) {
         const c = color
-        return <ul className="list-disc pl-4.5 space-y-1 marker:text-[var(--marker-color)]" style={{ "--marker-color": c } as React.CSSProperties}>{children}</ul>
+        return <ul className="list-disc pl-4.5 space-y-2 marker:text-[var(--marker-color)]" style={{ "--marker-color": c } as React.CSSProperties}>{children}</ul>
     }
 
     return <>
         <style>{`
-            @page { margin: 0.2in; }
+            @page { margin: 0; }
             @media print {
                 header, nav { display: none !important; }
                 #cv-page, #cv-page * {
@@ -158,7 +164,7 @@ export default function CV() {
         `}</style>
 
         <div className="print:hidden fixed top-20 right-4 z-10 flex flex-col gap-4">
-            <IconButton
+            {PRINT && <IconButton
                 onClick={() => {
                     const originalTitle = document.title
                     document.title = "Jasper_Paterson_CV"
@@ -174,7 +180,7 @@ export default function CV() {
                 icon={Printer}
                 color="var(--bg)"
                 background="var(--color-primary)"
-            />
+            />}
 
             <IconButton
                 onClick={() => {
@@ -196,7 +202,7 @@ export default function CV() {
             <div className="cv-scale-outer" style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
                 <div className="cv-scale-inner" style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
                     <Page>
-                        <p className="text-2xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
+                        <p className="text-xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
 
                         <Table wide className="w-fit">
                             <tr>
@@ -210,11 +216,11 @@ export default function CV() {
                             </tr>
                         </Table>
                       
-                        <Section title="About Me">
+                        {/* <Section title="About Me">
                             <P>
                                 Full stack software engineer from Perth, WA. Love playing tennis and beach volleyball.
                             </P>
-                        </Section>
+                        </Section> */}
 
                         <Section title="Education">
                             <Table className="w-fit">
@@ -234,7 +240,34 @@ export default function CV() {
                                 </tr>
                             </Table>
 
-                            <P>Achieved the top mark in <span className="italic">Software Testing and Quality Assurance</span> and <span className="italic">Mobile and Wireless Computing</span>.</P>
+                            {/* <P>
+                                Achieved the top mark in
+                                <span className="italic">
+                                    Software Testing and Quality Assurance
+                                </span>
+                                and
+                                <span className="italic">
+                                    Mobile and Wireless Computing
+                                </span>.
+                            </P> */}
+
+                            <List>
+                                <li>
+                                    Achieved the top mark in two units, <span className="italic">
+                                        Software Testing and Quality Assurance
+                                    </span> and <span className="italic">
+                                        Mobile and Wireless Computing
+                                    </span>.
+                                </li>
+                                <li>
+                                    Received three letters of commendation for excellence in teaching in <span className="italic">
+                                        Systems Programming
+                                    </span> and <span className="italic">
+                                        Computational Thinking in Python
+                                    </span>.
+                                </li>
+                            </List>
+
                         </Section>
 
                         <Section title="Experience">
@@ -243,6 +276,7 @@ export default function CV() {
                                 link="https://aurora-oe.com/"
                                 title="Aurora Offshore Engineering (AOE)"
                                 date="March 2024 - Present"
+                                subHeading="React.js, Python, Django, Docker, Kotlin Multiplatform, Azure Container Apps, Azure Front Door"
                             >
                                 <List color="var(--color-uwa-blue)">
                                     <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
@@ -256,6 +290,7 @@ export default function CV() {
                                 link="https://icrar.org/"
                                 title="ICRAR Studentship"
                                 date="Nov 2023 - Feb 2024"
+                                // subHeading="Python, SciPy, Scikit-Learn"
                             >
                                 <List color="var(--color-icrar-red)">
                                     <li>Joined the <A color="var(--color-icrar-red)" hoverColor="var(--color-primary)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
@@ -273,9 +308,10 @@ export default function CV() {
                                 link="https://www.codersforcauses.org/"
                                 title="Coders for Causes"
                                 date="Jun 2023 - Jul 2023"
+                                subHeading="Vue.js, TypeScript, Django, Docker, PostgreSQL"
                             >
                                 <List>
-                                    <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://stride-for-education.vercel.app/">Community Spirit Foundation</A>.</li>
+                                    <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://github.com/codersforcauses/csf">Community Spirit Foundation</A>.</li>
                                 </List>
                             </ExperienceSection>
 
@@ -284,18 +320,19 @@ export default function CV() {
                                 link="https://uwa.edu.au/"
                                 title="UWA Lab Demonstrator"
                                 date="Feb 2022 - Oct 2024"
+                                subHeading="C, C++, Python, Java, OpenGL"
                             >
-                                <div className="flex flex-row gap-8">
+                                <div className="flex flex-row gap-12">
                                     <List color="var(--color-uwa-gold)">
-                                        <li>Computer Networks</li>
+                                        <li>Computational Thinking in Python</li>
                                         <li>Graphics and Animation</li>
                                         <li>Secure Coding</li>
                                     </List>
 
                                     <List color="var(--color-uwa-gold)">
-                                        <li>Computational Thinking in Python</li>
                                         <li>Systems Programming</li>
-                                        <li>Three commendations for excellence in teaching</li>
+                                        <li>Computer Networks</li>
+                                        {/* <li>Three commendations for excellence in teaching</li> */}
                                     </List>
                                 </div>
                             </ExperienceSection>
