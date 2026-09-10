@@ -6,7 +6,7 @@ import icrarLogo from "../../assets/icrar.png";
 import uwaLogo from "../../assets/uwa.png";
 import cfcLogo from "../../assets/cfc.jpeg";
 
-const PRINT = false;
+const PRINT = true;
 
 const W = 210; //  * 1.1;
 const H = 297; //  * 1.1;
@@ -74,11 +74,11 @@ export default function CV() {
         </table>
     }
 
-    function ExperienceSection({ title, date, children = "", icon, link, subHeading }: { icon?: string, link?: string, title: string, date: string, children?: ReactNode, subHeading?: string }) {
+    function ExperienceSection({ title, date, children = "", icon, link, subHeading, color }: { icon?: string, link?: string, title: string, date: string, children?: ReactNode, subHeading?: string, color?: string }) {
         const i = <>{icon && <img src={icon} alt="" className={`${iconSize} object-contain shrink-0`} />}</>
 
         return <>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-1">
                     <div className="flex flex-row justify-between items-center">
                         <div className="flex items-center gap-2 leading-none">
@@ -89,7 +89,7 @@ export default function CV() {
                         <div className="font-semibold">{date}</div>
                     </div>
 
-                    {subHeading && <div className="text-muted italic pl-6">
+                    {subHeading && <div className="italic pl-4" style={{ color: color || "var(--color-muted)" }}>
                         {subHeading}
                     </div>}
                 </div>
@@ -130,7 +130,7 @@ export default function CV() {
 
     function Page({ children }: { children: ReactNode }) {
         return <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm text-justify`}>
-            <div className="flex flex-col gap-4 bg-white h-full overflow-hidden">
+            <div className="flex flex-col gap-3 bg-white h-full overflow-hidden">
                 {children}
             </div>
         </div>
@@ -277,6 +277,7 @@ export default function CV() {
                                 title="Aurora Offshore Engineering (AOE)"
                                 date="March 2024 - Present"
                                 subHeading="React.js, Python, Django, Docker, Kotlin Multiplatform, Azure Container Apps, Azure Front Door"
+                                // color="var(--color-uwa-blue)"
                             >
                                 <List color="var(--color-uwa-blue)">
                                     <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
@@ -290,7 +291,8 @@ export default function CV() {
                                 link="https://icrar.org/"
                                 title="ICRAR Studentship"
                                 date="Nov 2023 - Feb 2024"
-                                // subHeading="Python, SciPy, Scikit-Learn"
+                                subHeading="Python"
+                                // color="var(--color-icrar-red)"
                             >
                                 <List color="var(--color-icrar-red)">
                                     <li>Joined the <A color="var(--color-icrar-red)" hoverColor="var(--color-primary)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
@@ -308,7 +310,7 @@ export default function CV() {
                                 link="https://www.codersforcauses.org/"
                                 title="Coders for Causes"
                                 date="Jun 2023 - Jul 2023"
-                                subHeading="Vue.js, TypeScript, Django, Docker, PostgreSQL"
+                                subHeading="Vue.js, TypeScript, Python, Django, Docker, PostgreSQL"
                             >
                                 <List>
                                     <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://github.com/codersforcauses/csf">Community Spirit Foundation</A>.</li>
@@ -321,6 +323,7 @@ export default function CV() {
                                 title="UWA Lab Demonstrator"
                                 date="Feb 2022 - Oct 2024"
                                 subHeading="C, C++, Python, Java, OpenGL"
+                                // color="var(--color-uwa-gold)"
                             >
                                 <div className="flex flex-row gap-12">
                                     <List color="var(--color-uwa-gold)">
