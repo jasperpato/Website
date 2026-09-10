@@ -6,7 +6,7 @@ import icrarLogo from "../../assets/icrar.png";
 import uwaLogo from "../../assets/uwa.png";
 import cfcLogo from "../../assets/cfc.jpeg";
 
-const PRINT = true;
+const PRINT = false;
 
 const W = 210; //  * 1.1;
 const H = 297; //  * 1.1;
