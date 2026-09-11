@@ -128,14 +128,6 @@ export default function CV() {
         </svg>
     }
 
-    function Page({ children }: { children: ReactNode }) {
-        return <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm text-justify`}>
-            <div className="flex flex-col gap-3 bg-white h-full overflow-hidden">
-                {children}
-            </div>
-        </div>
-    }
-
     function List({ children, color = "black" }: { children: ReactNode, color?: string }) {
         const c = color
         return <ul className="list-disc pl-4.5 space-y-2 marker:text-[var(--marker-color)]" style={{ "--marker-color": c } as React.CSSProperties}>{children}</ul>
@@ -201,146 +193,148 @@ export default function CV() {
         >
             <div className="cv-scale-outer" style={{ width: PAGE_WIDTH_PX * scale, height: PAGE_HEIGHT_PX * scale }}>
                 <div className="cv-scale-inner" style={{ width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX, transform: `scale(${scale})`, transformOrigin: "top left" }}>
-                    <Page>
-                        <p className="text-xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
-                        
-                        <Table wide className="w-fit">
-                            <tr>
-                                <Td><A href="mailto:jasperpato@gmail.com"><Mail className={iconSize}/>jasperpato@gmail.com</A></Td>
-                                <Td><A href="https://github.com/jasperpato/"><GithubIcon className={iconSize}/>github.com/jasperpato</A></Td>
-                            </tr>
-                            <tr>
-                                {/* "https://jasperpato.com/" */}
-                                <Td><A href="/"><Globe className={iconSize}/>jasperpato.com</A></Td>
-                                <Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><LinkedinIcon className={`${iconSize} text-[#0077B5] group-hover:text-secondary`}/>linkedin.com/in/jasper-paterson-798b1317b</A></Td>
-                            </tr>
-                        </Table>
-                      
-                        {/* <Section title="About Me">
-                            <P>
-                                Full stack software engineer from Perth, WA. Love playing tennis and beach volleyball.
-                            </P>
-                        </Section> */}
-
-                        <Section title="Education">
-                            <Table className="w-fit">
+                    <div id="cv-page" className={`${dimensions} ${margins} bg-white text-sm text-justify`}>
+                        <div className="flex flex-col gap-3 bg-white h-full overflow-hidden">
+                            <p className="text-xl font-semibold pb-2">Jasper Paterson<span className="px-3">•</span>Full Stack Software Engineer</p>
+                            
+                            <Table wide className="w-fit">
                                 <tr>
-                                    <Td header fit>Undergrad</Td>
-                                    <Td>UWA Bachelor of Science in Engineering Science and Computer Science</Td>
-                                    <Td fit right>WAM<br />GPA</Td>
-                                    <Td fit>86.0<br />6.91</Td>
-                                    <Td fit right semibold>2019 - 2021</Td>
+                                    <Td><A href="mailto:jasperpato@gmail.com"><Mail className={iconSize}/>jasperpato@gmail.com</A></Td>
+                                    <Td><A href="https://github.com/jasperpato/"><GithubIcon className={iconSize}/>github.com/jasperpato</A></Td>
                                 </tr>
                                 <tr>
-                                    <Td header fit>Postgrad</Td>
-                                    <Td>UWA Master of Professional Engineering (Software Specialisation)</Td>
-                                    <Td fit right>WAM<br />GPA</Td>
-                                    <Td fit>85.9<br />7.00</Td>
-                                    <Td fit right semibold>2022 - 2024</Td>
+                                    {/* "https://jasperpato.com/" */}
+                                    <Td><A href="/"><Globe className={iconSize}/>jasperpato.com</A></Td>
+                                    <Td><A href="https://www.linkedin.com/in/jasper-paterson-798b1317b"><LinkedinIcon className={`${iconSize} text-[#0077B5] group-hover:text-secondary`}/>linkedin.com/in/jasper-paterson-798b1317b</A></Td>
                                 </tr>
                             </Table>
+                        
+                            {/* <Section title="About Me">
+                                <P>
+                                    Full stack software engineer from Perth, WA. Love playing tennis and beach volleyball.
+                                </P>
+                            </Section> */}
 
-                            {/* <P>
-                                Achieved the top mark in
-                                <span className="italic">
-                                    Software Testing and Quality Assurance
-                                </span>
-                                and
-                                <span className="italic">
-                                    Mobile and Wireless Computing
-                                </span>.
-                            </P> */}
+                            <Section title="Education">
+                                <Table className="w-fit">
+                                    <tr>
+                                        <Td header fit>Undergrad</Td>
+                                        <Td>UWA Bachelor of Science in Engineering Science and Computer Science</Td>
+                                        <Td fit right>WAM<br />GPA</Td>
+                                        <Td fit>86.0<br />6.91</Td>
+                                        <Td fit right semibold>2019 - 2021</Td>
+                                    </tr>
+                                    <tr>
+                                        <Td header fit>Postgrad</Td>
+                                        <Td>UWA Master of Professional Engineering (Software Specialisation)</Td>
+                                        <Td fit right>WAM<br />GPA</Td>
+                                        <Td fit>85.9<br />7.00</Td>
+                                        <Td fit right semibold>2022 - 2024</Td>
+                                    </tr>
+                                </Table>
 
-                            <List>
-                                <li>
-                                    Achieved the top mark in two units, <span className="italic">
+                                {/* <P>
+                                    Achieved the top mark in
+                                    <span className="italic">
                                         Software Testing and Quality Assurance
-                                    </span> and <span className="italic">
+                                    </span>
+                                    and
+                                    <span className="italic">
                                         Mobile and Wireless Computing
                                     </span>.
-                                </li>
-                                <li>
-                                    Received three letters of commendation for excellence in teaching in <span className="italic">
-                                        Systems Programming
-                                    </span> and <span className="italic">
-                                        Computational Thinking in Python
-                                    </span>.
-                                </li>
-                            </List>
+                                </P> */}
 
-                        </Section>
-
-                        <Section title="Experience">
-                            <ExperienceSection
-                                icon={aoeLogo}
-                                link="https://aurora-oe.com/"
-                                title="Aurora Offshore Engineering (AOE)"
-                                date="March 2024 - Present"
-                                subHeading="React.js, Python, Django, Docker, Kotlin Multiplatform, Azure Container Apps, Azure Front Door"
-                                // color="var(--color-uwa-blue)"
-                            >
-                                <List color="var(--color-uwa-blue)">
-                                    <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
-                                    <li>Built and deployed a web app for subsea engineering using React.js, Django, PostgreSQL and Celery and deployed on Azure at <A color="var(--color-aurora-blue)" href="https://auroracat.app/">auroracat.app</A>.</li>
-                                    <li>Built a desktop application for engineering analysis with cloud capabilities using Kotlin Multiplatform and Azure, used in-house and by external clients, assisted by two interns.</li>
-                                </List>
-                            </ExperienceSection>
-
-                            <ExperienceSection
-                                icon={icrarLogo}
-                                link="https://icrar.org/"
-                                title="ICRAR Studentship"
-                                date="Nov 2023 - Feb 2024"
-                                subHeading="Python"
-                                // color="var(--color-icrar-red)"
-                            >
-                                <List color="var(--color-icrar-red)">
-                                    <li>Joined the <A color="var(--color-icrar-red)" hoverColor="var(--color-primary)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
-                                        ASKAP Fast Transients (CRAFT) Survey </A> team researching Fast Radio Bursts
-                                        (FRBs).</li>
-                                    
-                                    {/* https://www.cambridge.org/core/journals/publications-of-the-astronomical-society-of-australia/article/hightimeresolution-properties-of-35-fast-radio-bursts-detected-by-the-commensal-realtime-askap-fast-transients-survey/A90A664F7E466FC925D54CC74284B051 */}
-                                    {/* https://arxiv.org/search/astro-ph?searchtype=author&query=Paterson,+J */}
-                                    <li>Conducted a statistical analysis of FRB burst profiles and their host galaxy data using Python, contributing to <A hoverColor="var(--color-primary)" color="var(--color-icrar-red)" href="https://doi.org/10.1017/pasa.2025.10103">multiple papers</A>.</li>
-                                </List>
-                            </ExperienceSection>
-
-                            <ExperienceSection
-                                icon={cfcLogo}
-                                link="https://www.codersforcauses.org/"
-                                title="Coders for Causes"
-                                date="Jun 2023 - Jul 2023"
-                                subHeading="Vue.js, TypeScript, Python, Django, Docker, PostgreSQL"
-                            >
                                 <List>
-                                    <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://github.com/codersforcauses/csf">Community Spirit Foundation</A>.</li>
+                                    <li>
+                                        Achieved the top mark in two units, <span className="italic">
+                                            Software Testing and Quality Assurance
+                                        </span> and <span className="italic">
+                                            Mobile and Wireless Computing
+                                        </span>.
+                                    </li>
+                                    <li>
+                                        Received three letters of commendation for excellence in teaching in <span className="italic">
+                                            Systems Programming
+                                        </span> and <span className="italic">
+                                            Computational Thinking in Python
+                                        </span>.
+                                    </li>
                                 </List>
-                            </ExperienceSection>
 
-                            <ExperienceSection
-                                icon={uwaLogo}
-                                link="https://uwa.edu.au/"
-                                title="UWA Lab Demonstrator"
-                                date="Feb 2022 - Oct 2024"
-                                subHeading="C, C++, Python, Java, OpenGL"
-                                // color="var(--color-uwa-gold)"
-                            >
-                                <div className="flex flex-row gap-12">
-                                    <List color="var(--color-uwa-gold)">
-                                        <li>Computational Thinking in Python</li>
-                                        <li>Graphics and Animation</li>
-                                        <li>Secure Coding</li>
-                                    </List>
+                            </Section>
 
-                                    <List color="var(--color-uwa-gold)">
-                                        <li>Systems Programming</li>
-                                        <li>Computer Networks</li>
-                                        {/* <li>Three commendations for excellence in teaching</li> */}
+                            <Section title="Experience">
+                                <ExperienceSection
+                                    icon={aoeLogo}
+                                    link="https://aurora-oe.com/"
+                                    title="Aurora Offshore Engineering (AOE)"
+                                    date="March 2024 - Present"
+                                    subHeading="React.js, Python, Django, Docker, Kotlin Multiplatform, Azure Container Apps, Azure Front Door"
+                                    // color="var(--color-uwa-blue)"
+                                >
+                                    <List color="var(--color-uwa-blue)">
+                                        <li>Completed a paid, published <A color="var(--color-aurora-blue)" href="https://doi.org/10.1115/OMAE2025-157573">master's thesis</A> on Distributed Acoustic Sensing at AOE as part of the <A color="var(--color-aurora-blue)" href="https://ceed.wa.edu.au/">Co-operative Education for Enterprise Development (CEED)</A> program.</li>
+                                        <li>Built and deployed a web app for subsea engineering using React.js, Django, PostgreSQL and Celery and deployed on Azure at <A color="var(--color-aurora-blue)" href="https://auroracat.app/">auroracat.app</A>.</li>
+                                        <li>Built a desktop application for engineering analysis with cloud capabilities using Kotlin Multiplatform and Azure, used in-house and by external clients, assisted by two interns.</li>
                                     </List>
-                                </div>
-                            </ExperienceSection>
-                        </Section>
-                    </Page>
+                                </ExperienceSection>
+
+                                <ExperienceSection
+                                    icon={icrarLogo}
+                                    link="https://icrar.org/"
+                                    title="ICRAR Studentship"
+                                    date="Nov 2023 - Feb 2024"
+                                    subHeading="Python"
+                                    // color="var(--color-icrar-red)"
+                                >
+                                    <List color="var(--color-icrar-red)">
+                                        <li>Joined the <A color="var(--color-icrar-red)" hoverColor="var(--color-primary)" href="https://research.curtin.edu.au/cira/our-research/science/craft-survey/">Commensal Real-time
+                                            ASKAP Fast Transients (CRAFT) Survey </A> team researching Fast Radio Bursts
+                                            (FRBs).</li>
+                                        
+                                        {/* https://www.cambridge.org/core/journals/publications-of-the-astronomical-society-of-australia/article/hightimeresolution-properties-of-35-fast-radio-bursts-detected-by-the-commensal-realtime-askap-fast-transients-survey/A90A664F7E466FC925D54CC74284B051 */}
+                                        {/* https://arxiv.org/search/astro-ph?searchtype=author&query=Paterson,+J */}
+                                        <li>Conducted a statistical analysis of FRB burst profiles and their host galaxy data using Python, contributing to <A hoverColor="var(--color-primary)" color="var(--color-icrar-red)" href="https://doi.org/10.1017/pasa.2025.10103">multiple papers</A>.</li>
+                                    </List>
+                                </ExperienceSection>
+
+                                <ExperienceSection
+                                    icon={cfcLogo}
+                                    link="https://www.codersforcauses.org/"
+                                    title="Coders for Causes"
+                                    date="Jun 2023 - Jul 2023"
+                                    subHeading="Vue.js, TypeScript, Python, Django, Docker, PostgreSQL"
+                                >
+                                    <List>
+                                        <li>Part of the volunteer team building a website for the <A className="font-medium" href="https://github.com/codersforcauses/csf">Community Spirit Foundation</A>.</li>
+                                    </List>
+                                </ExperienceSection>
+
+                                <ExperienceSection
+                                    icon={uwaLogo}
+                                    link="https://uwa.edu.au/"
+                                    title="UWA Lab Demonstrator"
+                                    date="Feb 2022 - Oct 2024"
+                                    subHeading="C, C++, Python, Java, OpenGL"
+                                    // color="var(--color-uwa-gold)"
+                                >
+                                    <div className="flex flex-row gap-12">
+                                        <List color="var(--color-uwa-gold)">
+                                            <li>Computational Thinking in Python</li>
+                                            <li>Graphics and Animation</li>
+                                            <li>Secure Coding</li>
+                                        </List>
+
+                                        <List color="var(--color-uwa-gold)">
+                                            <li>Systems Programming</li>
+                                            <li>Computer Networks</li>
+                                            {/* <li>Three commendations for excellence in teaching</li> */}
+                                        </List>
+                                    </div>
+                                </ExperienceSection>
+                            </Section>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

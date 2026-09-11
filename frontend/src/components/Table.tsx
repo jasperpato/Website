@@ -51,7 +51,7 @@ export default function Table<T>({ columns, data, pageSize = 10, resetPageKey }:
               </tr>
             ) : (
               table.getRowModel().rows.map(row => (
-                <tr key={row.id} className="border-b border-border hover:bg-gray-50">
+                <tr key={row.id} className="border-b border-border hover:bg-border">
                   {row.getVisibleCells().map(cell => (
                     <td key={cell.id} className="px-3 py-2">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

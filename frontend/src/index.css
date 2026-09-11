@@ -3,7 +3,7 @@
 @theme {
   --color-primary: cornflowerblue;
   --color-secondary: coral;
-  --color-border: lightgrey;
+  --color-border: var(--border);
   --color-muted: grey;
   --color-accent: gold;
   --color-success: limegreen;
@@ -27,6 +27,7 @@
 :root {
   --black: black;
   --white: white;
+  --border:: lightgrey;
 
   --text: var(--black);
   --bg: var(--white);
@@ -54,6 +55,7 @@
   :root {
     --text: white;
     --bg: black;
+    --border: #343434;
 
     /* --text-h: #f3f4f6;
     --bg: #16171d;
