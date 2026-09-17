@@ -27,7 +27,7 @@
 :root {
   --black: black;
   --white: white;
-  --border:: lightgrey;
+  --border: lightgrey;
 
   --text: var(--black);
   --bg: var(--white);
